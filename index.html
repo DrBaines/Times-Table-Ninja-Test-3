@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#1e3a8a" />
   <link rel="icon" href="./favicon.ico" />
-  <link rel="stylesheet" href="./styles.css?v=frontpage-GH6" />
+  <link rel="stylesheet" href="./styles.css?v=frontpage-GH7" />
 </head>
 <body>
   <noscript>
@@ -142,29 +142,33 @@
   </section>
 
   <!-- ===== QUIZ UI ===== -->
-  <section id="quiz-container" class="center" style="display:none;" aria-labelledby="quiz-title">
-    <h2 id="welcome-user" class="subtitle"></h2>
+<section id="quiz-container" class="center" style="display:none;" aria-labelledby="quiz-title">
+  <!-- Title for the current quiz -->
+  <h2 id="quiz-title" class="subtitle"></h2>
 
-    <div class="quiz-row">
-      <div class="question-col">
-        <h2 id="quiz-title" class="visually-hidden">Times Table Question</h2>
-        <div id="question" class="question" role="status" aria-live="polite"></div>
-        <label for="answer" class="visually-hidden">Your answer</label>
-        <input
-          type="text"
-          id="answer"
-          class="answer-input"
-          inputmode="numeric"
-          autocomplete="off"
-          aria-label="Your answer"
-        />
-      </div>
+  <!-- Optional welcome line -->
+  <h3 id="welcome-user" class="info-text"></h3>
 
-      <div id="answer-pad" class="answer-pad calc-pad" aria-label="On-screen number pad" role="group">
-        <noscript><p>Enable JavaScript to use the on-screen keypad.</p></noscript>
-      </div>
+  <div class="quiz-row">
+    <div class="question-col">
+      <div id="question" class="question" role="status" aria-live="polite"></div>
+      <label for="answer" class="visually-hidden">Your answer</label>
+      <input
+        type="text"
+        id="answer"
+        class="answer-input"
+        inputmode="numeric"
+        autocomplete="off"
+        aria-label="Your answer"
+      />
     </div>
 
+    <div id="answer-pad" class="answer-pad calc-pad" aria-label="On-screen number pad" role="group">
+      <noscript><p>Enable JavaScript to use the on-screen keypad.</p></noscript>
+    </div>
+  </div>
+
+      
     <div id="timer" class="timer" aria-hidden="true">Time left</div>
     <div id="score" class="score" role="region" aria-label="Score and answers"></div>
 
@@ -173,6 +177,6 @@
     </div>
   </section>
 
-  <script src="./script.js?v=frontpage-GH6" defer defer?v=frontpage-36"></script>
+  <script src="./script.js?v=frontpage-GH7" defer defer?v=frontpage-36"></script>
 </body>
 </html>
