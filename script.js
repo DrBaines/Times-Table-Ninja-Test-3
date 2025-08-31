@@ -1,9 +1,9 @@
-/* Times Tables Trainer — script.js (frontpage-GH5, dynamic answer length +2)
-   - Screen IDs: home-screen, mini-screen, ninja-screen, quiz-container
-   - On-screen keypad inside #answer-pad (fixed by CSS)
-   - Dynamic maxlength = len(correct answer) + 2 (min 4)
-   - Hidden 5-min timer
-   - All functions exported to window.*
+/* Times Tables Trainer — script.js (frontpage-GH9)
+   Changes in GH9:
+   - Quiz title (#quiz-title) is only used at the top; never duplicated.
+   - On endQuiz(), question (#question) and input (#answer) are hidden so the title doesn't drift.
+   - Removed duplicate "Quit" button in results (keep the HTML "Quit to Home" only).
+   - Dynamic answer length: len(correct) + 2 (min 4). Works for keypad + keyboard.
 */
 
 const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbyIuCIgbFisSKqA0YBtC5s5ATHsHXxoqbZteJ4en7hYrf4AXmxbnMOUfeQ2ERZIERN-/exec";
@@ -30,6 +30,7 @@ let timerDeadline = 0;
 let desktopKeyHandler = null;
 let submitLockedUntil = 0;
 
+/* ---------- utils ---------- */
 const $ = (id)=>document.getElementById(id);
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -49,7 +50,7 @@ function getMaxLenForCurrentQuestion(){
 function syncAnswerMaxLen(){
   const a = $("answer"); if(!a) return;
   const cap = getMaxLenForCurrentQuestion();
-  a.setAttribute("maxlength", String(cap));
+  try{ a.setAttribute("maxlength", String(cap)); }catch{}
   if (a.value.length > cap) a.value = a.value.slice(0, cap);
 }
 
@@ -197,7 +198,7 @@ function buildSilverQuestions(total){
   const out = [];
   for (let n=0;n<total;n++){
     const a = bases[Math.floor(Math.random()*bases.length)];
-       const b = bases[Math.floor(Math.random()*bases.length)];
+    const b = bases[Math.floor(Math.random()*bases.length)];
     const k = pow[Math.floor(Math.random()*pow.length)];
     const m = pow[Math.floor(Math.random()*pow.length)];
     const A = a * Math.pow(10, k);
@@ -218,6 +219,10 @@ function preflightAndStart(questions, opts={}){
 
   const quiz = $("quiz-container");
   if (quiz) quiz.setAttribute("data-theme", opts.theme || "");
+
+  // Ensure question + answer are visible when a new quiz starts
+  const qEl = $("question"); if (qEl) qEl.style.display = "";
+  const aEl = $("answer");   if (aEl) aEl.style.display = "";
 
   setScreen("quiz-container");
   createKeypad();
@@ -288,20 +293,28 @@ function teardownQuiz(){
 function endQuiz(){
   teardownQuiz();
   destroyKeypad();
+
+  // Hide old question/answer UI so the title stays at the top only
+  const qEl = $("question"); if (qEl) qEl.style.display = "none";
+  const aEl = $("answer");   if (aEl) aEl.style.display = "none";
+
   let correct = 0;
   for (let i=0;i<allQuestions.length;i++){
     const c = Number(allQuestions[i].a);
     const u = (userAnswers[i]==="" ? NaN : Number(userAnswers[i]));
     if (!Number.isNaN(u) && u===c) correct++;
   }
+
   const s = $("score");
   if (s){
     s.innerHTML = `
-      <div class="result-line"><strong>${modeLabel}:</strong> ${correct} / ${allQuestions.length}</div>
+      <div class="result-line">
+        <strong>${modeLabel}:</strong> ${correct} / ${allQuestions.length}
+      </div>
       <button class="big-button" onclick="showAnswers()">Show answers</button>
-      <button class="big-button" onclick="quitFromQuiz()">Quit</button>
     `;
   }
+
   try{
     queueResult({ secret:SHEET_SECRET, mode:modeLabel, name:userName || (localStorage.getItem(NAME_KEY)||""), total:allQuestions.length, correct, ts:new Date().toISOString() });
     flushQueue();
