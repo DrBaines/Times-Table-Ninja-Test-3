@@ -1,9 +1,8 @@
 /* =========================================================
-   Times Tables Trainer - Stylesheet (frontpage-GH8)
-   Cleaned for GitHub Pages, fixed keypad, responsive offsets
+   Times Tables Trainer - Stylesheet (frontpage-GH9)
+   Fixed keypad, responsive offsets, quiz title anchored
    ========================================================= */
 
-/* -------- Global resets & base -------- */
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -13,51 +12,24 @@ body {
   color: #111;
 }
 
-/* Shared layout */
 .center { text-align: center; margin-top: 80px; }
 .title { font-size: 56px; margin: 0 0 20px; }
 .subtitle { font-size: 48px; margin: 0 0 20px; }
 .info-text { font-size: 22px; margin: 10px 0 20px; color: #444; }
 .visually-hidden { position: absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; clip:rect(0 0 0 0); overflow:hidden; }
 
-.choice-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin: 12px 0 30px;
-  flex-wrap: wrap;
-}
-.choice {
-  font-size: 42px;
-  padding: 18px 36px;
-  border: 3px solid #333;
-  background: #fff;
-  border-radius: 12px;
-  cursor: pointer;
-}
-.choice.selected { background: #4caf50; color: #fff; border-color: #4caf50; }
+.choice-buttons { display:flex; justify-content:center; gap:16px; margin:12px 0 30px; flex-wrap:wrap; }
+.choice { font-size: 42px; padding:18px 36px; border:3px solid #333; background:#fff; border-radius:12px; cursor:pointer; }
+.choice.selected { background:#4caf50; color:#fff; border-color:#4caf50; }
 
 .stack-mobile { gap: 20px; }
 .name-row { margin: 10px 0 20px; }
 
-.big-input {
-  font-size: 44px;
-  padding: 18px;
-  width: 520px;
-  max-width: 92vw;
-  text-align: center;
-}
+.big-input { font-size:44px; padding:18px; width:520px; max-width:92vw; text-align:center; }
 
-.big-button {
-  font-size: 28px;
-  padding: 16px 26px;
-  cursor: pointer;
-  border: 2px solid #222;
-  border-radius: 10px;
-  background: #fff;
-}
-.big-button.primary { background: #4caf50; color: #fff; border-color: #4caf50; }
-.big-button.secondary { background: #ffb300; color: #222; border-color: #ffb300; }
+.big-button { font-size:28px; padding:16px 26px; cursor:pointer; border:2px solid #222; border-radius:10px; background:#fff; }
+.big-button.primary { background:#4caf50; color:#fff; border-color:#4caf50; }
+.big-button.secondary { background:#ffb300; color:#222; border-color:#ffb300; }
 
 /* Mini test table buttons */
 .table-btn {
@@ -70,24 +42,18 @@ body {
   margin: 6px;
 }
 .table-btn:hover { background: #f0f0f0; }
-/* -------- Quiz text & info -------- */
-.question { font-size: 120px; margin: 0 0 30px; }
-.answer-input {
-  font-size: 100px;
-  width: 340px;
-  text-align: center;
-  margin-top: 0;
-}
-.timer { font-size: 50px; margin-top: 30px; }
-.score { font-size: 40px; margin-top: 30px; }
 
-/* Hide the timer UI but keep logic running */
-.timer { display: none !important; }
+/* Quiz typography */
+#quiz-title { margin-top:10px; margin-bottom:20px; display:block; }
+.question { font-size: 120px; margin: 0 0 30px; }
+.answer-input { font-size: 100px; width: 340px; text-align: center; margin-top: 0; }
+.timer { font-size: 50px; margin-top: 30px; display:none !important; }
+.score { font-size: 40px; margin-top: 30px; }
 
 /* Quiz container chrome for belt backgrounds */
 #quiz-container { padding: 20px; border-radius: 16px; }
 
-/* -------- Side-by-side layout (question | keypad) -------- */
+/* Layout (question | keypad) */
 .quiz-row {
   display: inline-grid;
   grid-template-columns: minmax(380px, auto) auto;
@@ -96,22 +62,11 @@ body {
   justify-content: center;
   margin: 60px auto 0;
 }
-.question-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
+.question-col { display:flex; flex-direction:column; align-items:center; text-align:center; }
 
-/* ======= KEYPAD (stable, fixed on the right) ======= */
-/* One source of truth for spacing: keypad offset & quiz padding use same var */
-:root {
-  --pad-right: 360px; /* desktop default; adjust below at tablet sizes */
-}
-
-/* Fix keypad host on the right; JS injects inner .pad and buttons */
-#answer-pad,
-.answer-pad.calc-pad {
+/* Keypad fixed to the right; spacing tied to var */
+:root { --pad-right: 360px; }
+#answer-pad, .answer-pad.calc-pad {
   position: fixed;
   right: var(--pad-right);
   top: 50%;
@@ -121,16 +76,13 @@ body {
   pointer-events: auto;
   margin: 0;
 }
-
-/* Ensure the quiz content never sits under the keypad */
 #quiz-container {
   padding-right: var(--pad-right);
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 1100px; /* narrower column on large screens for iPad-like feel */
+  margin-left: auto; margin-right: auto;
+  max-width: 1100px;
 }
 
-/* Inner keypad grid (matches your JS markup: <div class="pad">…buttons…</div>) */
+/* Inner keypad grid & buttons */
 #answer-pad .pad {
   display: grid;
   grid-template-columns: repeat(4, 70px);
@@ -143,113 +95,62 @@ body {
   border-radius: 12px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
 }
-
-/* Key buttons */
 #answer-pad .pad-btn {
-  border: 2px solid #333;
-  border-radius: 8px;
-  background: #fff;
-  cursor: pointer;
-  user-select: none;
-  touch-action: manipulation;
+  border: 2px solid #333; border-radius: 8px; background:#fff;
+  cursor: pointer; user-select: none; touch-action: manipulation;
   transition: transform 0.05s ease-in, background 0.1s;
-  width: 100%;
-  height: 100%;
-  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  display:flex; align-items:center; justify-content:center;
 }
-#answer-pad .pad-btn:not(.pad-enter):not(.pad-clear):not(.pad-back) {
-  font-size: 34px; font-weight: 800; color: #007bff;
-}
-#answer-pad .pad-enter,
-#answer-pad .pad-clear,
-#answer-pad .pad-back {
-  font-size: 20px; color: #444; background: #e7e7e7;
-}
-#answer-pad .pad-btn:active { transform: scale(0.96); background: #f0f0f0; }
-#answer-pad .pad-btn:focus  { outline: 3px solid #7aa7ff; outline-offset: 2px; }
+#answer-pad .pad-btn:not(.pad-enter):not(.pad-clear):not(.pad-back){ font-size:34px; font-weight:800; color:#007bff; }
+#answer-pad .pad-enter, #answer-pad .pad-clear, #answer-pad .pad-back { font-size:20px; color:#444; background:#e7e7e7; }
+#answer-pad .pad-btn:active { transform: scale(0.96); background:#f0f0f0; }
+#answer-pad .pad-btn:focus  { outline:3px solid #7aa7ff; outline-offset:2px; }
 #answer-pad .pad-wide { grid-column: span 2; }
 
-/* -------- Smaller screens (phones) -------- */
+/* Smaller screens */
 @media (max-width: 700px) {
-  .quiz-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    margin-top: 40px;
-  }
+  .quiz-row { display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:40px; }
   .subtitle { font-size: 36px; }
   .question { font-size: 80px; }
   .answer-input { font-size: 72px; width: 280px; }
-
-  #answer-pad .pad {
-    grid-template-columns: repeat(4, 56px);
-    grid-auto-rows: 56px;
-    gap: 10px;
-  }
-  #answer-pad .pad-btn:not(.pad-enter):not(.pad-clear):not(.pad-back) { font-size: 28px; }
+  #answer-pad .pad { grid-template-columns: repeat(4, 56px); grid-auto-rows: 56px; gap: 10px; }
+  #answer-pad .pad-btn:not(.pad-enter):not(.pad-clear):not(.pad-back){ font-size:28px; }
   #answer-pad .pad-enter, #answer-pad .pad-clear, #answer-pad .pad-back { font-size: 18px; }
 }
 
-/* -------- Welcome lines -------- */
+/* Welcome lines */
 #welcome-user { font-size: 28px; margin-bottom: 12px; font-weight: normal; color: #333; }
 #hello-user   { font-size: 28px; font-weight: normal; color: #333; }
 
-/* ===== Ninja Belt Grid ===== */
-.belt-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
-  max-width: 1100px;
-  margin: 0 auto 30px;
-  padding: 0 16px;
-}
-.belt-card {
-  border: 2px solid rgba(0,0,0,0.2);
-  border-radius: 16px;
-  padding: 18px 16px 20px;
-  text-align: left;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-}
-.belt-name { font-size: 24px; font-weight: 800; margin-bottom: 6px; padding: 6px 10px; border-radius: 10px; display: inline-block; }
-.belt-desc { font-size: 18px; margin-bottom: 6px; }
-.belt-meta { font-size: 16px; opacity: 0.9; margin-bottom: 12px; }
+/* Ninja Belt Grid */
+.belt-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; max-width:1100px; margin:0 auto 30px; padding:0 16px; }
+.belt-card { border:2px solid rgba(0,0,0,0.2); border-radius:16px; padding:18px 16px 20px; text-align:left; box-shadow:0 3px 10px rgba(0,0,0,0.06); }
+.belt-name { font-size:24px; font-weight:800; margin-bottom:6px; padding:6px 10px; border-radius:10px; display:inline-block; }
+.belt-desc { font-size:18px; margin-bottom:6px; }
+.belt-meta { font-size:16px; opacity:0.9; margin-bottom:12px; }
+.belt-card.white { background:#ffffff; border:none; }
+.belt-card.yellow { background:#fff59d; }
+.belt-card.orange { background:#ffcc80; }
+.belt-card.green  { background:#a5d6a7; }
+.belt-card.blue   { background:#90caf9; }
+.belt-card.pink   { background:#f8bbd0; }
+.belt-card.purple { background:#d1c4e9; }
+.belt-card.red    { background:#ef9a9a; }
+.belt-card.black  { background:#e0e0e0; }
+.belt-card.bronze { background:#e7c9a6; }
+.belt-card.silver { background:#d9d9d9; }
+.belt-card .belt-name { color:#111; }
+.belt-card.green  .belt-name { color:#0b3d0b; }
+.belt-card.blue   .belt-name { color:#0a2a5a; }
+.belt-card.pink   .belt-name { color:#5a0a35; }
+.belt-card.purple .belt-name { color:#3a2a6a; }
+.belt-card.red    .belt-name { color:#5a0a0a; }
+.belt-card.black  .belt-name { color:#111; }
+.belt-card.bronze .belt-name { color:#5c4428; }
+.belt-card.silver .belt-name { color:#222; }
 
-/* Belt colours */
-.belt-card.white { background: #ffffff; border: none; }
-.belt-card.yellow { background: #fff59d; }
-.belt-card.orange { background: #ffcc80; }
-.belt-card.green  { background: #a5d6a7; }
-.belt-card.blue   { background: #90caf9; }
-.belt-card.pink   { background: #f8bbd0; }
-.belt-card.purple { background: #d1c4e9; }
-.belt-card.red    { background: #ef9a9a; }
-.belt-card.black  { background: #e0e0e0; }
-.belt-card.bronze { background: #e7c9a6; }
-.belt-card.silver { background: #d9d9d9; }
-
-.belt-card .belt-name { color: #111; }
-.belt-card.green  .belt-name { color: #0b3d0b; }
-.belt-card.blue   .belt-name { color: #0a2a5a; }
-.belt-card.pink   .belt-name { color: #5a0a35; }
-.belt-card.purple .belt-name { color: #3a2a6a; }
-.belt-card.red    .belt-name { color: #5a0a0a; }
-.belt-card.black  .belt-name { color: #111; }
-.belt-card.bronze .belt-name { color: #5c4428; }
-.belt-card.silver .belt-name { color: #222; }
-
-/* ===== iPad & responsive keypad offset tuning ===== */
-/* Pull keypad closer to the edge on typical iPad widths */
-@media (max-width: 1024px) {
-  :root { --pad-right: 120px; }
-  #quiz-container { max-width: 920px; }
-}
-@media (max-width: 834px) {  /* iPad 11"/10.5" portrait-ish */
-  :root { --pad-right: 80px; }
-  #quiz-container { max-width: 860px; }
-}
-
-/* On very wide displays, keep it from drifting too far inward */
-@media (min-width: 1440px) {
-  :root { --pad-right: clamp(240px, 12vw, 360px); }
-}
+/* iPad & responsive keypad offset tuning */
+@media (max-width: 1024px) { :root{ --pad-right: 120px; } #quiz-container{ max-width: 920px; } }
+@media (max-width: 834px)  { :root{ --pad-right: 80px; }  #quiz-container{ max-width: 860px; } }
+@media (min-width: 1440px) { :root{ --pad-right: clamp(240px, 12vw, 360px); } }
