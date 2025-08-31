@@ -59,6 +59,17 @@ body {
 .big-button.primary { background: #4caf50; color: #fff; border-color: #4caf50; }
 .big-button.secondary { background: #ffb300; color: #222; border-color: #ffb300; }
 
+/* Mini test table buttons */
+.table-btn {
+  font-size: 32px;
+  padding: 14px 28px;
+  cursor: pointer;
+  border: 2px solid #333;
+  border-radius: 10px;
+  background: #fff;
+  margin: 6px;
+}
+.table-btn:hover { background: #f0f0f0; }
 /* -------- Quiz text & info -------- */
 .question { font-size: 120px; margin: 0 0 30px; }
 .answer-input {
