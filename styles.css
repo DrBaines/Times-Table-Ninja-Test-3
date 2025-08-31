@@ -297,8 +297,42 @@ body {
     padding-right: 360px; /* adjust if you change keypad size */
   }
 }
-/* === Shift calc-pad more central from the right edge === */
+
+
+/* ===== Responsive keypad offset + narrower desktop column ===== */
+/* 1) Use a CSS variable so keypad offset and quiz padding stay in sync */
+:root {
+  --pad-right: 360px; /* desktop default (you set this earlier) */
+}
+
+/* Keep quiz content clear of the keypad using the same offset */
+#quiz-container {
+  padding-right: var(--pad-right);
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1100px; /* narrow the content on larger screens */
+}
+
+/* Tie the keypad to the same offset */
 #answer-pad,
 .answer-pad.calc-pad {
-  right: 360px; /* adjust this value until it feels right */
+  right: var(--pad-right);
+}
+
+/* 2) Pull the keypad closer to the right edge on tablets (iPad-ish widths) */
+@media (max-width: 1024px) {
+  :root { --pad-right: 120px; }   /* closer to the right on iPad */
+  #quiz-container { max-width: 920px; }
+}
+
+/* 3) Even closer on smaller tablets */
+@media (max-width: 834px) {
+  :root { --pad-right: 80px; }
+  #quiz-container { max-width: 860px; }
+}
+
+/* 4) On very wide displays, don’t let it drift too far in:
+      clamp keeps it between 240px and 360px depending on viewport width. */
+@media (min-width: 1440px) {
+  :root { --pad-right: clamp(240px, 12vw, 360px); }
 }
