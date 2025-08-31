@@ -300,5 +300,5 @@ body {
 /* === Shift calc-pad more central from the right edge === */
 #answer-pad,
 .answer-pad.calc-pad {
-  right: 120px; /* adjust this value until it feels right */
+  right: 240px; /* adjust this value until it feels right */
 }
