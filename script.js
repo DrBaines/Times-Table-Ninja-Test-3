@@ -307,7 +307,7 @@ function endQuiz(){
       <div class="result-line">
         <strong>Score =</strong> ${correct} / ${allQuestions.length}
       </div>
-      <button class="big-button" onclick="showAnswers()">Show answers</button>
+      <button class="big-button" onclick="()">Show answers</button>
     `;
     // no injected Quit button here — rely on the static one in HTML
   }
@@ -326,12 +326,35 @@ function endQuiz(){
 }
 function showAnswers(){
   const s = $("score"); if(!s) return;
-  let html = `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;justify-items:start;max-width:1200px;margin:20px auto;">`;
+  let html = `
+    <div style="
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      justify-items: start;
+      max-width: 1200px;
+      margin: 20px auto;
+    ">
+  `;
+
   allQuestions.forEach((q,i)=>{
     const u = (userAnswers[i]!==undefined && userAnswers[i]!=="") ? userAnswers[i] : "—";
-    const ok = (userAnswers[i]===q.a);
-    html += `<div style="font-size:22px;font-weight:bold;color:${ok?'green':'red'};text-align:left;">${q.q} = ${u}</div>`;
+    const correct = (userAnswers[i]===q.a);
+
+    let displayEq;
+    if (q.q.includes("___")) {
+      // Replace the first blank with the child’s answer underlined
+      displayEq = q.q.replace("___", `<u>${u}</u>`);
+    } else {
+      // Normal equation
+      displayEq = `${q.q} = ${u}`;
+    }
+
+    html += `<div style="font-size:22px; font-weight:bold; color:${correct?'green':'red'}; text-align:left;">
+      ${displayEq}
+    </div>`;
   });
+
   html += "</div>";
   s.innerHTML += html;
 }
