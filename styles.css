@@ -278,3 +278,22 @@ body {
   background: #e7e7e7;
 }
 #answer-pad .pad-wide { grid-column: span 2; }
+
+/* === Fix calc-pad to the right (doesn't move as questions change) === */
+#answer-pad,
+.answer-pad.calc-pad {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  width: max-content;   /* keep grid width, don't stretch */
+  pointer-events: auto; /* ensure it's clickable */
+}
+
+/* Give the question area some breathing room so the pad doesn't overlap it */
+@media (min-width: 900px) {
+  #quiz-container {
+    padding-right: 360px; /* adjust if you change keypad size */
+  }
+}
