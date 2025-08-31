@@ -297,3 +297,8 @@ body {
     padding-right: 360px; /* adjust if you change keypad size */
   }
 }
+/* === Shift calc-pad more central from the right edge === */
+#answer-pad,
+.answer-pad.calc-pad {
+  right: 120px; /* adjust this value until it feels right */
+}
