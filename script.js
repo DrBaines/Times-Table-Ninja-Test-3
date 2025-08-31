@@ -308,11 +308,12 @@ function endQuiz(){
   const s = $("score");
   if (s){
     s.innerHTML = `
-      <div class="result-line">
-        <strong>${modeLabel}:</strong> ${correct} / ${allQuestions.length}
-      </div>
-      <button class="big-button" onclick="showAnswers()">Show answers</button>
-    `;
+  <div class="result-line">
+    <strong>Score =</strong> ${correct} / ${allQuestions.length}
+  </div>
+  <button class="big-button" onclick="showAnswers()">Show answers</button>
+  <button class="big-button" onclick="quitFromQuiz()">Quit to Home</button>
+`;
   }
 
   try{
