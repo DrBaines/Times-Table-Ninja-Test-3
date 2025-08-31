@@ -292,11 +292,7 @@ function teardownQuiz(){
 /* ---------- end & answers ---------- */
 function endQuiz(){
   teardownQuiz();
-  destroyKeypad();
-
-  // Hide old question/answer UI so the title stays at the top only
-  const qEl = $("question"); if (qEl) qEl.style.display = "none";
-  const aEl = $("answer");   if (aEl) aEl.style.display = "none";
+  destroyKeypad(); // remove keypad so nothing can overlay other screens
 
   let correct = 0;
   for (let i=0;i<allQuestions.length;i++){
@@ -308,16 +304,23 @@ function endQuiz(){
   const s = $("score");
   if (s){
     s.innerHTML = `
-  <div class="result-line">
-    <strong>Score =</strong> ${correct} / ${allQuestions.length}
-  </div>
-  <button class="big-button" onclick="showAnswers()">Show answers</button>
-  <button class="big-button" onclick="quitFromQuiz()">Quit to Home</button>
-`;
+      <div class="result-line">
+        <strong>Score =</strong> ${correct} / ${allQuestions.length}
+      </div>
+      <button class="big-button" onclick="showAnswers()">Show answers</button>
+    `;
+    // no injected Quit button here — rely on the static one in HTML
   }
 
   try{
-    queueResult({ secret:SHEET_SECRET, mode:modeLabel, name:userName || (localStorage.getItem(NAME_KEY)||""), total:allQuestions.length, correct, ts:new Date().toISOString() });
+    queueResult({
+      secret: SHEET_SECRET,
+      mode: modeLabel,
+      name: userName || (localStorage.getItem(NAME_KEY) || ""),
+      total: allQuestions.length,
+      correct: correct,
+      ts: new Date().toISOString()
+    });
     flushQueue();
   }catch(e){}
 }
