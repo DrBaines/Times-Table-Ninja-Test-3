@@ -62,8 +62,6 @@ function setScreen(id) {
     var el = document.getElementById(screens[i]);
     if (el) el.style.display = (screens[i] === id ? "block" : "none");
   }
-}
-);
   document.body.setAttribute("data-screen", id);
 }
 function goHome(){
