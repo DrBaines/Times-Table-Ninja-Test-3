@@ -495,9 +495,7 @@ function buildGoldQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-  return shuffle(out).slice(0,total);
-}
-
+ 
 window.addEventListener("DOMContentLoaded", () => {
   const btnMini = document.getElementById("btn-mini");
   if (btnMini) btnMini.addEventListener("click", (e)=>{ try{ e.preventDefault(); }catch{} goMini(); });
