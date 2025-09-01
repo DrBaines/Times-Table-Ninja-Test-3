@@ -1,4 +1,4 @@
-/* Times Tables Trainer — script.js (frontpage-GH20)
+/* Times Tables Trainer — script.js (frontpage-GH21)
    Full app: Mini Tests, Ninja Belts, keypad + keyboard, hidden timer, offline queue
 */
 
@@ -70,18 +70,25 @@ function goHome() {
 
   setScreen("home-screen");
 }
-function goMini(){
+function goMini(){ try {
   const name = ($("home-username")?.value || "").trim();
   if (name) localStorage.setItem(NAME_KEY, name);
   const hello = $("hello-user");
   if (hello) hello.textContent = name ? `Hello, ${name}!` : "Mini Tests";
   buildTableButtons();
   setScreen("mini-screen");
-}
-function goNinja(){
+} catch (e) {
+  // Fallback: show mini, hide others
+  const ids=["home-screen","mini-screen","ninja-screen","quiz-screen"];
+  ids.forEach(s=>{ const el=document.getElementById(s); if(el) el.style.display=(s==="mini-screen"?"block":"none"); });
+}}
+function goNinja(){ try {
   const name = ($("home-username")?.value || "").trim();
   if (name) localStorage.setItem(NAME_KEY, name);
   setScreen("ninja-screen");
+} catch (e) {
+  const ids=["home-screen","mini-screen","ninja-screen","quiz-screen"];
+  ids.forEach(s=>{ const el=document.getElementById(s); if(el) el.style.display=(s==="ninja-screen"?"block":"none"); });
 }
 window.goHome = goHome;
 window.goMini = goMini;
@@ -486,3 +493,10 @@ function buildGoldQuestions(total){
 }
   return shuffle(out).slice(0,total);
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  const btnMini = document.getElementById("btn-mini");
+  if (btnMini) btnMini.addEventListener("click", (e)=>{ try{ e.preventDefault(); }catch{} goMini(); });
+  const btnNinja = document.getElementById("btn-ninja");
+  if (btnNinja) btnNinja.addEventListener("click", (e)=>{ try{ e.preventDefault(); }catch{} goNinja(); });
+});
