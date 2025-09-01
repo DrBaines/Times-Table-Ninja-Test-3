@@ -94,6 +94,7 @@ function goNinja(){ try {
   const ids=["home-screen","mini-screen","ninja-screen","quiz-screen"];
   ids.forEach(s=>{ const el=document.getElementById(s); if(el) el.style.display=(s==="ninja-screen"?"block":"none"); });
 }
+}                      
 window.goHome = goHome;
 window.goMini = goMini;
 window.goNinja = goNinja;
