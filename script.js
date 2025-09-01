@@ -1,3 +1,9 @@
+
+window.onerror = function (msg, src, line, col, err) {
+  try { console.error("[fatal]", msg, "at", src+":"+line+":"+col, err); } catch {}
+  try { alert("Oops—something went wrong. Check the console for details."); } catch {}
+  try { setScreen("ninja-screen"); } catch {}
+};
 /* Times Tables Trainer — script.js (frontpage-GH13)
    - Full logic restored (navigation, quiz flow, belts, etc.)
    - Dynamic answer length (+2 digits headroom)
@@ -62,7 +68,9 @@ function setScreen(id) {
     var el = document.getElementById(screens[i]);
     if (el) el.style.display = (screens[i] === id ? "block" : "none");
   }
-  document.body.setAttribute("data-screen", id);
+  try { document.body.setAttribute("data-screen", id); } catch {}
+}
+document.body.setAttribute("data-screen", id);
 }
 function goHome(){
   var s = document.getElementById("score"); if (s) s.innerHTML = "";
@@ -113,73 +121,59 @@ function startQuiz(){
 }
 
 /* ---------- belts ---------- */
-function startWhiteBelt(){
-  modeLabel = "White Belt";
-  preflightAndStart(buildMixedBases([3,4],50), { theme:"white" });
+function startWhiteBelt(){ modeLabel="White Belt"; preflightAndStart(buildMixedBases([3,4],50), { theme:"white" }); }
+);
 }
 
-function startYellowBelt(){
-  modeLabel = "Yellow Belt";
-  preflightAndStart(buildMixedBases([4,6],50), { theme:"yellow" });
+function startYellowBelt(){ modeLabel="Yellow Belt"; preflightAndStart(buildMixedBases([4,6],50), { theme:"yellow" }); }
+);
 }
 
-function startOrangeBelt(){
-  modeLabel = "Orange Belt";
-  preflightAndStart(buildMixedBases([2,3,4,5,6],50), { theme:"orange" });
+function startOrangeBelt(){ modeLabel="Orange Belt"; preflightAndStart(buildMixedBases([2,3,4,5,6],50), { theme:"orange" }); }
+);
 }
 
-function startGreenBelt(){
-  modeLabel = "Green Belt";
-  preflightAndStart(buildMixedBases([4,8],50), { theme:"green" });
+function startGreenBelt(){ modeLabel="Green Belt"; preflightAndStart(buildMixedBases([4,8],50), { theme:"green" }); }
+);
 }
 
-function startBlueBelt(){
-  modeLabel = "Blue Belt";
-  preflightAndStart(buildMixedBases([7,8],50), { theme:"blue" });
+function startBlueBelt(){ modeLabel="Blue Belt"; preflightAndStart(buildMixedBases([7,8],50), { theme:"blue" }); }
+);
 }
 
-function startPinkBelt(){
-  modeLabel = "Pink Belt";
-  preflightAndStart(buildMixedBases([7,9],50), { theme:"pink" });
+function startPinkBelt(){ modeLabel="Pink Belt"; preflightAndStart(buildMixedBases([7,9],50), { theme:"pink" }); }
+);
 }
 
-function startPurpleBelt(){
-  modeLabel = "Purple Belt";
-  preflightAndStart(buildFullyMixed(50,{min:2,max:10}), { theme:"purple" });
+function startPurpleBelt(){ modeLabel="Purple Belt"; preflightAndStart(buildFullyMixed(50,{min:2,max:10}), { theme:"purple" }); }
+), { theme:"purple" });
 }
 
-function startRedBelt(){
-  modeLabel = "Red Belt";
-  preflightAndStart(buildFullyMixed(100,{min:2,max:10}), { theme:"red" });
+function startRedBelt(){ modeLabel="Red Belt"; preflightAndStart(buildFullyMixed(100,{min:2,max:10}), { theme:"red" }); }
+), { theme:"red" });
 }
 
-function startBlackBelt(){
-  modeLabel = "Black Belt";
-  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), { theme:"black" });
+function startBlackBelt(){ modeLabel="Black Belt"; preflightAndStart(buildFullyMixed(100,{min:2,max:12}), { theme:"black" }); }
+), { theme:"black" });
 }
 
-function startBronzeBelt(){
-  modeLabel = "Bronze Belt";
-  preflightAndStart(buildBronzeQuestions(100), { theme:"bronze" });
+function startBronzeBelt(){ modeLabel="Bronze Belt"; preflightAndStart(buildBronzeQuestions(100), { theme:"bronze" }); }
+);
 }
 
-function startSilverBelt(){
-  modeLabel = "Silver Belt";
-  preflightAndStart(buildSilverQuestions(100), { theme:"silver" });
+function startSilverBelt(){ modeLabel="Silver Belt"; preflightAndStart(buildSilverQuestions(100), { theme:"silver" }); }
+);
 }
-function startGoldBelt(){
-  modeLabel = "Gold Belt";
-  preflightAndStart(buildGoldQuestions(100), { theme:"gold" });
+function startGoldBelt(){ modeLabel="Gold Belt"; preflightAndStart(buildGoldQuestions(100), { theme:"gold" }); }
+);
 }
 
-function startPlatinumBelt(){
-  modeLabel = "Platinum Belt";
-  preflightAndStart(buildPlatinumQuestions(100), { theme:"platinum" });
+function startPlatinumBelt(){ modeLabel="Platinum Belt"; preflightAndStart(buildPlatinumQuestions(100), { theme:"platinum" }); }
+);
 }
 
-function startObsidianBelt(){
-  modeLabel = "Obsidian Belt";
-  preflightAndStart(buildObsidianQuestions(100), { theme:"obsidian" });
+function startObsidianBelt(){ modeLabel="Obsidian Belt"; preflightAndStart(buildObsidianQuestions(100), { theme:"obsidian" }); }
+);
 }
 /* ---------- question builders ---------- */
 function buildMiniQuestions(base, total){
@@ -351,6 +345,8 @@ function buildObsidianQuestions(total){
 
 /* ---------- quiz flow ---------- */
 function preflightAndStart(questions, opts){
+  if (!Array.isArray(questions) || questions.length === 0) { console.error('[preflight] No questions', questions); alert('No questions were generated — returning to belts.'); setScreen('ninja-screen'); return; }
+
   ended = false;
   currentIndex = 0;
   allQuestions = Array.isArray(questions) ? questions.slice() : [];
@@ -367,14 +363,19 @@ function preflightAndStart(questions, opts){
   startTimer(quizSeconds);
 }
 function showQuestion(){
-  const q = allQuestions[currentIndex];
-  const qEl = $("question");
-  const aEl = $("answer");
-  if (qEl) qEl.textContent = q ? q.q : "";
+  if (ended) return;
+  var q = allQuestions[currentIndex];
+  var qEl = document.getElementById("question");
+  var aEl = document.getElementById("answer");
+  if (!q || typeof q.q !== "string") { console.error("[showQuestion] bad question", currentIndex, q); endQuiz(); return; }
+  if (qEl) qEl.textContent = q.q;
   if (aEl){
     aEl.value = "";
     syncAnswerMaxLen();
     try{ aEl.focus(); aEl.setSelectionRange(aEl.value.length, aEl.value.length); }catch{}
+  }
+}
+catch{}
   }
 }
 function handleKey(val){
