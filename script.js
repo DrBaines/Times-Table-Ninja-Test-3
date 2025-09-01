@@ -1,4 +1,4 @@
-/* Times Tables Trainer — script.js (frontpage-GH22)
+/* Times Tables Trainer — script.js (frontpage-GH23)
    Full app: Mini Tests, Ninja Belts, keypad + keyboard, hidden timer, offline queue
 */
 
