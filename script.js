@@ -211,7 +211,7 @@ function buildSilverQuestions(total){
 }
 
 /* ---------- quiz flow ---------- */
-function preflightAndStart(questions, opts={}){
+function preflightAndStart(questions, opts={}) {
   ended = false;
   currentIndex = 0;
   allQuestions = questions.slice();
@@ -220,11 +220,29 @@ function preflightAndStart(questions, opts={}){
   const quiz = $("quiz-container");
   if (quiz) quiz.setAttribute("data-theme", opts.theme || "");
 
-  // Ensure question + answer visible
-  const qEl = $("question"); if (qEl) qEl.style.display = "";
-  const aEl = $("answer");   if (aEl) aEl.style.display = "";
+  // Switch to the quiz screen
+  setScreen("quiz-screen");
 
-  setScreen("quiz-container");
+  // Reset question and answer fields
+  const qEl = $("question"); 
+  if (qEl) { 
+    qEl.style.display = ""; 
+    qEl.textContent = "";  // clear leftover question
+  }
+
+  const aEl = $("answer");   
+  if (aEl) { 
+    aEl.style.display = ""; 
+    aEl.value = ""; 
+    aEl.focus();
+  }
+
+  // Clear out any previous score/answers
+  const s = $("score");
+  if (s) { 
+    s.innerHTML = ""; 
+  }
+
   createKeypad();
 
   const title = $("quiz-title");
@@ -236,6 +254,7 @@ function preflightAndStart(questions, opts={}){
   const a = $("answer");
   attachKeyboard(a);
 }
+
 function showQuestion(){
   const q = allQuestions[currentIndex];
   const qEl = $("question");
