@@ -60,6 +60,7 @@ body {
 .belt-card.silver { border-color:#94a3b8; }
 .belt-card.gold   { border-color:#f59e0b; }
 .belt-card.platinum { border-color:#64748b; }
+.belt-card.obsidian { border-color:#111; }
 
 .quiz-card { background:white; display:inline-block; padding: 26px; border-radius: 16px; box-shadow: 0 4px 0 rgba(0,0,0,.12); }
 .question { font-size: 64px; margin: 0 0 16px; }
