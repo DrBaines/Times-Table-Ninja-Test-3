@@ -113,29 +113,74 @@ function startQuiz(){
 }
 
 /* ---------- belts ---------- */
-function startWhiteBelt(){ modeLabel="White Belt"; preflightAndStart(buildMixedBases([3,4],50),{theme:"white"}); }
-); }
-function startYellowBelt(){ modeLabel="Yellow Belt"; preflightAndStart(buildMixedBases([4,6],50),{theme:"yellow"}); }
-); }
-function startOrangeBelt(){ modeLabel="Orange Belt"; preflightAndStart(buildMixedBases([2,3,4,5,6],50),{theme:"orange"}); }
-); }
-function startGreenBelt(){ modeLabel="Green Belt"; preflightAndStart(buildMixedBases([4,8],50),{theme:"green"}); }
-); }
-function startBlueBelt(){ modeLabel="Blue Belt"; preflightAndStart(buildMixedBases([7,8],50),{theme:"blue"}); }
-); }
-function startPinkBelt(){ modeLabel="Pink Belt"; preflightAndStart(buildMixedBases([7,9],50),{theme:"pink"}); }
-); }
-function startPurpleBelt(){ modeLabel="Purple Belt"; preflightAndStart(buildFullyMixed(50,{min:2,max:10}),{theme:"purple"}); }
-),{theme:"purple"}); }
-function startRedBelt(){ modeLabel="Red Belt"; preflightAndStart(buildFullyMixed(100,{min:2,max:10}),{theme:"red"}); }
-),{theme:"red"}); }
-function startBlackBelt(){ modeLabel="Black Belt"; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"black"}); }
-),{theme:"black"}); }
-function startBronzeBelt(){ modeLabel="Bronze Belt"; preflightAndStart(buildBronzeQuestions(100),{theme:"bronze"}); }
-); }
-function startSilverBelt(){ modeLabel="Silver Belt"; preflightAndStart(buildSilverQuestions(100),{theme:"silver"}); }
-); }
+function startWhiteBelt(){
+  modeLabel = "White Belt";
+  preflightAndStart(buildMixedBases([3,4],50), { theme:"white" });
+}
 
+function startYellowBelt(){
+  modeLabel = "Yellow Belt";
+  preflightAndStart(buildMixedBases([4,6],50), { theme:"yellow" });
+}
+
+function startOrangeBelt(){
+  modeLabel = "Orange Belt";
+  preflightAndStart(buildMixedBases([2,3,4,5,6],50), { theme:"orange" });
+}
+
+function startGreenBelt(){
+  modeLabel = "Green Belt";
+  preflightAndStart(buildMixedBases([4,8],50), { theme:"green" });
+}
+
+function startBlueBelt(){
+  modeLabel = "Blue Belt";
+  preflightAndStart(buildMixedBases([7,8],50), { theme:"blue" });
+}
+
+function startPinkBelt(){
+  modeLabel = "Pink Belt";
+  preflightAndStart(buildMixedBases([7,9],50), { theme:"pink" });
+}
+
+function startPurpleBelt(){
+  modeLabel = "Purple Belt";
+  preflightAndStart(buildFullyMixed(50,{min:2,max:10}), { theme:"purple" });
+}
+
+function startRedBelt(){
+  modeLabel = "Red Belt";
+  preflightAndStart(buildFullyMixed(100,{min:2,max:10}), { theme:"red" });
+}
+
+function startBlackBelt(){
+  modeLabel = "Black Belt";
+  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), { theme:"black" });
+}
+
+function startBronzeBelt(){
+  modeLabel = "Bronze Belt";
+  preflightAndStart(buildBronzeQuestions(100), { theme:"bronze" });
+}
+
+function startSilverBelt(){
+  modeLabel = "Silver Belt";
+  preflightAndStart(buildSilverQuestions(100), { theme:"silver" });
+}
+function startGoldBelt(){
+  modeLabel = "Gold Belt";
+  preflightAndStart(buildGoldQuestions(100), { theme:"gold" });
+}
+
+function startPlatinumBelt(){
+  modeLabel = "Platinum Belt";
+  preflightAndStart(buildPlatinumQuestions(100), { theme:"platinum" });
+}
+
+function startObsidianBelt(){
+  modeLabel = "Obsidian Belt";
+  preflightAndStart(buildObsidianQuestions(100), { theme:"obsidian" });
+}
 /* ---------- question builders ---------- */
 function buildMiniQuestions(base, total){
   const out = [];
