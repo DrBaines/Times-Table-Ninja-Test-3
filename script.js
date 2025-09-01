@@ -234,6 +234,64 @@ function buildSilverQuestions(total){
   return shuffle(out).slice(0,total);
 }
 
+/* Gold: like Bronze (missing numbers) but using expanded ×10 numbers like Silver */
+function buildGoldQuestions(total){
+  const out = [];
+  const half = Math.max(1, Math.floor(total/2));
+  const exps = [0,1]; // 1, 10
+  // First half: guarantee blanks cycling patterns 1..4
+  for (let i=0;i<half;i++){
+    const A = randInt(2,12), B = randInt(1,10);
+    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
+    const t = (i % 4) + 1;
+    if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
+    else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
+    else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
+    else if (t===4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
+  }
+  // Second half: mix blanks and direct products
+  for (let i=half;i<total;i++){
+    const A = randInt(2,12), B = randInt(1,10);
+    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
+    const t = randInt(1,6);
+    if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
+    else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
+    else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
+    else if (t===4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
+    else if (t===5) out.push({ q:`${bigA} × ${bigB}`, a:prod });
+    else          out.push({ q:`${bigB} × ${bigA}`, a:prod });
+  }
+  return shuffle(out).slice(0,total);
+}
+
+/* Platinum: like Silver but with exponents [0,1,2] (1, 10, 100). */
+function buildPlatinumQuestions(total){
+  const out = [];
+  const exps = [0,1,2]; // 1, 10, 100
+  for (let i=0;i<total;i++){
+    const A = randInt(2,12), B = randInt(1,10);
+    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
+    const t = randInt(1,3);
+    if (t===1) {
+      out.push({ q:`${bigA} × ${bigB}`, a:prod });
+    } else if (t===2) {
+      out.push({ q:`${bigB} × ${bigA}`, a:prod });
+    } else {
+      // Division, no RHS answer shown
+      out.push({ q:`${prod} ÷ ${bigA}`, a:bigB });
+    }
+  }
+  return shuffle(out).slice(0,total);
+}
 /* ====== Quiz flow ====== */
 function preflightAndStart(questions, opts = {}){
   const name = ($("home-username")?.value || "").trim();
@@ -468,41 +526,7 @@ function initApp(){
 }
 window.addEventListener("DOMContentLoaded", initApp);
 
-/* Gold: like Bronze (missing numbers) but using expanded ×10 numbers like Silver */
-function buildGoldQuestions(total){
-  const out = [];
-  const half = Math.max(1, Math.floor(total/2));
-  const exps = [0,1]; // 1, 10
-  // First half: guarantee blanks cycling patterns 1..4
-  for (let i=0;i<half;i++){
-    const A = randInt(2,12), B = randInt(1,10);
-    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
-    const bigA = A * (10 ** e1);
-    const bigB = B * (10 ** e2);
-    const prod = bigA * bigB;
-    const t = (i % 4) + 1;
-    if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
-    else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
-    else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
-    else if (t===4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
-  }
-  // Second half: mix blanks and direct products
-  for (let i=half;i<total;i++){
-    const A = randInt(2,12), B = randInt(1,10);
-    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
-    const bigA = A * (10 ** e1);
-    const bigB = B * (10 ** e2);
-    const prod = bigA * bigB;
-    const t = randInt(1,6);
-    if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
-    else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
-    else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
-    else if (t===4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
-    else if (t===5) out.push({ q:`${bigA} × ${bigB}`, a:prod });
-    else          out.push({ q:`${bigB} × ${bigA}`, a:prod });
-  }
-  return shuffle(out).slice(0,total);
-}
+
  
 window.addEventListener("DOMContentLoaded", () => {
   const btnMini = document.getElementById("btn-mini");
