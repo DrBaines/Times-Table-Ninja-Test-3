@@ -150,7 +150,12 @@ function startPlatinumBelt(){
   quizSeconds = QUIZ_SECONDS_DEFAULT;
   preflightAndStart(buildPlatinumQuestions(20), {theme:"platinum"});
 }
-
+function startObsidianBelt(){
+  modeLabel = "Obsidian Belt (blanks + ×10 up to 100)";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildObsidianQuestions(20), { theme: "obsidian" }); // 20Q in demo
+}
+window.startObsidianBelt = startObsidianBelt;
 window.startPlatinumBelt = startPlatinumBelt;
 window.startWhiteBelt  = startWhiteBelt;
 window.startYellowBelt = startYellowBelt;
@@ -297,6 +302,52 @@ function buildPlatinumQuestions(total){
     }
   }
   return shuffle(out).slice(0,total);
+}
+Add this near your other builders, right after buildGoldQuestions(...) is a good spot.
+
+/* Obsidian: like Gold (missing-number style) but exponents [0,1,2] */
+function buildObsidianQuestions(total){
+  const out = [];
+  const exps = [0,1,2]; // 1, 10, 100
+
+  // If you want to guarantee plenty of blanks (like Gold), keep the two-phase build:
+  const half = Math.max(1, Math.floor(total/2));
+
+  // Phase 1: guarantee blanks (cycle t=1..4)
+  for (let i = 0; i < half; i++){
+    const A = randInt(2,12), B = randInt(1,10);
+    const e1 = exps[randInt(0, exps.length - 1)];
+    const e2 = exps[randInt(0, exps.length - 1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
+    const t = (i % 4) + 1; // 1..4
+
+    if (t === 1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
+    else if (t === 2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
+    else if (t === 3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
+    else             out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
+  }
+
+  // Phase 2: mix blanks + direct products
+  for (let i = half; i < total; i++){
+    const A = randInt(2,12), B = randInt(1,10);
+    const e1 = exps[randInt(0, exps.length - 1)];
+    const e2 = exps[randInt(0, exps.length - 1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
+    const t = randInt(1,6);
+
+    if (t === 1)      out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
+    else if (t === 2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
+    else if (t === 3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
+    else if (t === 4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
+    else if (t === 5) out.push({ q:`${bigA} × ${bigB}`, a:prod });
+    else              out.push({ q:`${bigB} × ${bigA}`, a:prod });
+  }
+
+  return shuffle(out).slice(0, total);
 }
 /* ====== Quiz flow ====== */
 function preflightAndStart(questions, opts = {}){
