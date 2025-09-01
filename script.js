@@ -61,7 +61,20 @@ function setScreen(id){
   });
   document.body.setAttribute("data-screen", id);
 }
-function goHome(){ setScreen("home-screen"); }
+function goHome() {
+  // Clear out any leftover score/answers
+  const s = $("score");
+  if (s) s.innerHTML = "";
+
+  // Reset question and answer fields
+  const qEl = $("question");
+  if (qEl) qEl.textContent = "";
+
+  const aEl = $("answer");
+  if (aEl) aEl.value = "";
+
+  setScreen("home-screen");
+}
 function goMini(){
   if (!userName) userName = (localStorage.getItem(NAME_KEY) || "").trim();
   const nameInput = $("home-username");
