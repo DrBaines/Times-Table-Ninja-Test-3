@@ -303,7 +303,7 @@ function buildPlatinumQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-Add this near your other builders, right after buildGoldQuestions(...) is a good spot.
+
 
 /* Obsidian: like Gold (missing-number style) but exponents [0,1,2] */
 function buildObsidianQuestions(total){
