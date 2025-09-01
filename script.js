@@ -208,19 +208,28 @@ function buildBronzeQuestions(total){
   return shuffle(out).slice(0,total);
 }
   
-/* Silver: like Black but expanded ×10 numbers (e.g., 20 × 300). Division form: c ÷ A = B */
+/* Silver: like Black but expanded ×10 numbers (e.g., 20 × 300).
+   Division questions should NOT show the result on the right. */
 function buildSilverQuestions(total){
   const out = [];
-  const exps = [0,1]; // x1, x10
-  for (let i=0;i<total;i++){ const A = randInt(2,12), B = randInt(1,10);
+  const exps = [0,1]; // 1, 10 only
+  for (let i=0;i<total;i++){
+    const A = randInt(2,12), B = randInt(1,10);
     const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
     const bigA = A * (10 ** e1);
     const bigB = B * (10 ** e2);
     const prod = bigA * bigB;
     const t = randInt(1,3);
-    if (t===1) out.push({ q:`${bigA} × ${bigB}`, a:prod });
-    else if (t===2) out.push({ q:`${bigB} × ${bigA}`, a:prod });
-    else out.push({ q:`${prod} ÷ ${bigA} = ${bigB}`, a:bigB }); // division form c ÷ A = B
+    if (t===1) {
+      // multiplication, order 1
+      out.push({ q:`${bigA} × ${bigB}`, a:prod });
+    } else if (t===2) {
+      // multiplication, order 2
+      out.push({ q:`${bigB} × ${bigA}`, a:prod });
+    } else {
+      // division WITHOUT showing the result (no "= B")
+      out.push({ q:`${prod} ÷ ${bigA}`, a:bigB });
+    }
   }
   return shuffle(out).slice(0,total);
 }
