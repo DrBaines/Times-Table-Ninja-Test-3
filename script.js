@@ -270,10 +270,83 @@ function buildSilverQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-× ${B}`, a:c });
-    else out.push({ q:`${c} ÷ ${A}`, a:B });
+function buildGoldQuestions(total){
+  var out = [];
+  var exps = [0,1]; // 1, 10 only
+  var half = Math.max(1, Math.floor(total/2)); // guarantee ≥50% blanks
+
+  // Phase 1: guaranteed blanks (cycle t=1..4)
+  for (var i=0;i<half;i++){
+    var A = randInt(2,12), B = randInt(1,10);
+    var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
+    var t = (i % 4) + 1; // 1..4
+    if (t===1) out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else            out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
   }
-  return shuffle(out);
+
+  // Phase 2: mix blanks + direct products
+  for (var i=half;i<total;i++){
+    var A = randInt(2,12), B = randInt(1,10);
+    var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
+    var t = randInt(1,6);
+    if (t===1) out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else if (t===4) out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
+    else if (t===5) out.push({ q:bigA+" × "+bigB, a:prod });
+    else            out.push({ q:bigB+" × "+bigA, a:prod });
+  }
+  return shuffle(out).slice(0,total);
+}
+function buildPlatinumQuestions(total){
+  var out = [];
+  var exps = [0,1,2]; // 1, 10, 100
+  for (var i=0;i<total;i++){
+    var A = randInt(2,12), B = randInt(1,10);
+    var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
+    var t = randInt(1,3);
+    if (t===1)      out.push({ q:bigA+" × "+bigB, a:prod });
+    else if (t===2) out.push({ q:bigB+" × "+bigA, a:prod });
+    else            out.push({ q:prod+" ÷ "+bigA, a:bigB }); // no RHS shown
+  }
+  return shuffle(out).slice(0,total);
+}
+function buildObsidianQuestions(total){
+  var out = [];
+  var exps = [0,1,2]; // 1, 10, 100
+  var half = Math.max(1, Math.floor(total/2)); // guarantee ≥50% blanks
+
+  // Phase 1: guaranteed blanks
+  for (var i=0;i<half;i++){
+    var A = randInt(2,12), B = randInt(1,10);
+    var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
+    var t = (i % 4) + 1;
+    if (t===1) out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else            out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
+  }
+
+  // Phase 2: mix
+  for (var i=half;i<total;i++){
+    var A = randInt(2,12), B = randInt(1,10);
+    var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
+    var t = randInt(1,6);
+    if (t===1)      out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else if (t===4) out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
+    else if (t===5) out.push({ q:bigA+" × "+bigB, a:prod });
+    else            out.push({ q:bigB+" × "+bigA, a:prod });
+  }
+  return shuffle(out).slice(0,total);
 }
 
 /* ---------- quiz flow ---------- */
