@@ -212,7 +212,7 @@ function buildBronzeQuestions(total){
 /* Silver: like Black but expanded ×10 numbers (e.g., 20 × 300). Division form: c ÷ A = B */
 function buildSilverQuestions(total){
   const out = [];
-  const exps = [0,1,2]; // x10, x100, x1000
+  const exps = [0,1]; // x1, x10
   for (let i=0;i<total;i++){ const A = randInt(2,12), B = randInt(1,10);
     const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
     const bigA = A * (10 ** e1);
@@ -464,7 +464,7 @@ window.addEventListener("DOMContentLoaded", initApp);
 function buildGoldQuestions(total){
   const out = [];
   const half = Math.max(1, Math.floor(total/2));
-  const exps = [0,1,2]; // 1, 10, 100
+  const exps = [0,1]; // 1, 10
   // First half: guarantee blanks cycling patterns 1..4
   for (let i=0;i<half;i++){
     const A = randInt(2,12), B = randInt(1,10);
