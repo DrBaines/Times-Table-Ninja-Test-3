@@ -248,7 +248,7 @@ function buildSilverQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-);
+
     else if (t===2) out.push({ q:bigB+" × "+bigA, a:prod });
     else out.push({ q:prod+" ÷ "+bigA, a:bigB });
   }
@@ -282,7 +282,7 @@ function buildGoldQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-);
+
     else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
     else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
     else            out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
@@ -317,7 +317,7 @@ function buildPlatinumQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-);
+
     else if (t===2) out.push({ q:bigB+" × "+bigA, a:prod });
     else            out.push({ q:prod+" ÷ "+bigA, a:bigB }); // no RHS shown
   }
@@ -351,7 +351,7 @@ function buildObsidianQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-);
+
     else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
     else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
     else            out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
