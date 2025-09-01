@@ -206,9 +206,7 @@ function buildBronzeQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-  return shuffle(out).slice(0,total);
-}
-
+  
 /* Silver: like Black but expanded ×10 numbers (e.g., 20 × 300). Division form: c ÷ A = B */
 function buildSilverQuestions(total){
   const out = [];
