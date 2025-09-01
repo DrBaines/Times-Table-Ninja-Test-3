@@ -132,7 +132,7 @@ function startRedBelt()   { modeLabel="Red Belt (2×–10×, 100 Q)"; quizSecond
 function startBlackBelt() { modeLabel="Black Belt (2×–12×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"black"}); }
 function startBronzeBelt(){ modeLabel="Bronze Belt (blanks)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (×10 expanded)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),{theme:"silver"}); }
-function startGoldBelt(){ modeLabel="Gold Belt (blanks + ×10)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildGoldQuestions(100),{theme:"gold"}); }
+function startBelt(){ modeLabel=" Belt (blanks + ×10)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildQuestions(100),{theme:""}); }
 
 window.startWhiteBelt  = startWhiteBelt;
 window.startYellowBelt = startYellowBelt;
@@ -145,7 +145,7 @@ window.startRedBelt    = startRedBelt;
 window.startBlackBelt  = startBlackBelt;
 window.startBronzeBelt = startBronzeBelt;
 window.startSilverBelt = startSilverBelt;
-window.startGoldBelt = startGoldBelt;
+window.startBelt = startBelt;
 
 /* Mix helpers */
 function buildMixedBases(bases,total){
@@ -184,7 +184,7 @@ function buildBronzeQuestions(total){
 /* Silver: like Black but expanded ×10 numbers (e.g., 20 × 300). Division form: c ÷ A = B */
 function buildSilverQuestions(total){
   const out = [];
-  const exps = [1,2,3]; // x10, x100, x1000
+  const exps = [0,1,2]; // x1, x10, x100
   for (let i=0;i<total;i++){ const A = randInt(2,12), B = randInt(1,10);
     const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
     const bigA = A * (10 ** e1);
@@ -435,7 +435,7 @@ window.addEventListener("DOMContentLoaded", initApp);
 /* Gold: like Bronze (missing numbers) but using expanded ×10 numbers like Silver */
 function buildGoldQuestions(total){
   const out = [];
-  const exps = [1,2,3]; // x10, x100, x1000
+  const exps = [0,1,2]; // 1, 10, 100
   for (let i=0;i<total;i++){
     const A = randInt(2,12), B = randInt(1,10);
     const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
@@ -443,7 +443,6 @@ function buildGoldQuestions(total){
     const bigB = B * (10 ** e2);
     const prod = bigA * bigB;
     const t = randInt(1,6);
-    // Patterns mirror Bronze but with bigA/bigB and prod
     if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
     else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
     else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
