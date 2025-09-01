@@ -1,7 +1,6 @@
-
-window.onerror = function (msg, src, line, col, err) {
+// Safety net (non-invasive)
+window.onerror = function(msg, src, line, col, err){
   try { console.error("[fatal]", msg, "at", src+":"+line+":"+col, err); } catch {}
-  try { alert("Oops—something went wrong. Check the console for details."); } catch {}
   try { setScreen("ninja-screen"); } catch {}
 };
 /* Times Tables Trainer — script.js (frontpage-GH13)
@@ -258,7 +257,13 @@ function buildSilverQuestions(total){
     var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
     var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
     var t = randInt(1,3);
-    if (t===1) out.push({ q:bigA+" × "+bigB, a:prod });
+    if (t===1)      out.push({ q: bigA+" × "+bigB, a: prod });
+    else if (t===2) out.push({ q: bigB+" × "+bigA, a: prod });
+    else            out.push({ q: prod+" ÷ "+bigA, a: bigB }); // no RHS
+  }
+  return shuffle(out).slice(0,total);
+}
+);
     else if (t===2) out.push({ q:bigB+" × "+bigA, a:prod });
     else out.push({ q:prod+" ÷ "+bigA, a:bigB });
   }
@@ -266,16 +271,33 @@ function buildSilverQuestions(total){
 }
 function buildGoldQuestions(total){
   var out = [];
-  var exps = [0,1]; // 1, 10 only
-  var half = Math.max(1, Math.floor(total/2)); // guarantee ≥50% blanks
-
-  // Phase 1: guaranteed blanks (cycle t=1..4)
+  var exps = [0,1];
+  var half = Math.max(1, Math.floor(total/2));
   for (var i=0;i<half;i++){
     var A = randInt(2,12), B = randInt(1,10);
     var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
-    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
-    var t = (i % 4) + 1; // 1..4
-    if (t===1) out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    var bigA = A*Math.pow(10,e1), bigB = B*Math.pow(10,e2), prod = bigA*bigB;
+    var t=(i%4)+1;
+    if (t===1)      out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:       bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else            out.push({ q:       prod+" ÷ ___ = "+bigB, a:bigA });
+  }
+  for (var i=half;i<total;i++){
+    var A = randInt(2,12), B = randInt(1,10);
+    var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    var bigA = A*Math.pow(10,e1), bigB = B*Math.pow(10,e2), prod = bigA*bigB;
+    var t=randInt(1,6);
+    if (t===1)      out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:       bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else if (t===4) out.push({ q:       prod+" ÷ ___ = "+bigB, a:bigA });
+    else if (t===5) out.push({ q:       bigA+" × "+bigB, a:prod });
+    else            out.push({ q:       bigB+" × "+bigA, a:prod });
+  }
+  return shuffle(out).slice(0,total);
+}
+);
     else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
     else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
     else            out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
@@ -298,13 +320,19 @@ function buildGoldQuestions(total){
 }
 function buildPlatinumQuestions(total){
   var out = [];
-  var exps = [0,1,2]; // 1, 10, 100
+  var exps = [0,1,2];
   for (var i=0;i<total;i++){
     var A = randInt(2,12), B = randInt(1,10);
     var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
-    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
-    var t = randInt(1,3);
-    if (t===1)      out.push({ q:bigA+" × "+bigB, a:prod });
+    var bigA = A*Math.pow(10,e1), bigB = B*Math.pow(10,e2), prod = bigA*bigB;
+    var t=randInt(1,3);
+    if (t===1)      out.push({ q: bigA+" × "+bigB, a: prod });
+    else if (t===2) out.push({ q: bigB+" × "+bigA, a: prod });
+    else            out.push({ q: prod+" ÷ "+bigA, a: bigB });
+  }
+  return shuffle(out).slice(0,total);
+}
+);
     else if (t===2) out.push({ q:bigB+" × "+bigA, a:prod });
     else            out.push({ q:prod+" ÷ "+bigA, a:bigB }); // no RHS shown
   }
@@ -312,16 +340,33 @@ function buildPlatinumQuestions(total){
 }
 function buildObsidianQuestions(total){
   var out = [];
-  var exps = [0,1,2]; // 1, 10, 100
-  var half = Math.max(1, Math.floor(total/2)); // guarantee ≥50% blanks
-
-  // Phase 1: guaranteed blanks
+  var exps = [0,1,2];
+  var half = Math.max(1, Math.floor(total/2));
   for (var i=0;i<half;i++){
     var A = randInt(2,12), B = randInt(1,10);
     var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
-    var bigA = A * Math.pow(10,e1), bigB = B * Math.pow(10,e2), prod = bigA * bigB;
-    var t = (i % 4) + 1;
-    if (t===1) out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    var bigA = A*Math.pow(10,e1), bigB = B*Math.pow(10,e2), prod = bigA*bigB;
+    var t=(i%4)+1;
+    if (t===1)      out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:       bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else            out.push({ q:       prod+" ÷ ___ = "+bigB, a:bigA });
+  }
+  for (var i=half;i<total;i++){
+    var A = randInt(2,12), B = randInt(1,10);
+    var e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    var bigA = A*Math.pow(10,e1), bigB = B*Math.pow(10,e2), prod = bigA*bigB;
+    var t=randInt(1,6);
+    if (t===1)      out.push({ q:"___ × "+bigA+" = "+prod, a:bigB });
+    else if (t===2) out.push({ q:       bigA+" × ___ = "+prod, a:bigB });
+    else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
+    else if (t===4) out.push({ q:       prod+" ÷ ___ = "+bigB, a:bigA });
+    else if (t===5) out.push({ q:       bigA+" × "+bigB, a:prod });
+    else            out.push({ q:       bigB+" × "+bigA, a:prod });
+  }
+  return shuffle(out).slice(0,total);
+}
+);
     else if (t===2) out.push({ q:bigA+" × ___ = "+prod, a:bigB });
     else if (t===3) out.push({ q:"___ ÷ "+bigA+" = "+bigB, a:prod });
     else            out.push({ q:prod+" ÷ ___ = "+bigB, a:bigA });
@@ -345,7 +390,7 @@ function buildObsidianQuestions(total){
 
 /* ---------- quiz flow ---------- */
 function preflightAndStart(questions, opts){
-  if (!Array.isArray(questions) || questions.length === 0) { console.error('[preflight] No questions', questions); alert('No questions were generated — returning to belts.'); setScreen('ninja-screen'); return; }
+  if (!Array.isArray(questions) || questions.length === 0) { console.error('[preflight] No questions', questions); setScreen('ninja-screen'); return; }
 
   ended = false;
   currentIndex = 0;
@@ -369,11 +414,7 @@ function showQuestion(){
   var aEl = document.getElementById("answer");
   if (!q || typeof q.q !== "string") { console.error("[showQuestion] bad question", currentIndex, q); endQuiz(); return; }
   if (qEl) qEl.textContent = q.q;
-  if (aEl){
-    aEl.value = "";
-    syncAnswerMaxLen();
-    try{ aEl.focus(); aEl.setSelectionRange(aEl.value.length, aEl.value.length); }catch{}
-  }
+  if (aEl) { aEl.value = ""; try{ aEl.focus(); }catch{} }
 }
 catch{}
   }
