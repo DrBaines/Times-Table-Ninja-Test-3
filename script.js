@@ -1,4 +1,4 @@
-/* Times Tables Trainer — script.js (frontpage-GH16)
+/* Times Tables Trainer — script.js (frontpage-GH17)
    Full app: Mini Tests, Ninja Belts, keypad + keyboard, hidden timer, offline queue
 */
 
@@ -132,6 +132,7 @@ function startRedBelt()   { modeLabel="Red Belt (2×–10×, 100 Q)"; quizSecond
 function startBlackBelt() { modeLabel="Black Belt (2×–12×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"black"}); }
 function startBronzeBelt(){ modeLabel="Bronze Belt (blanks)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (×10 expanded)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),{theme:"silver"}); }
+function startGoldBelt(){ modeLabel="Gold Belt (blanks + ×10)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildGoldQuestions(100),{theme:"gold"}); }
 
 window.startWhiteBelt  = startWhiteBelt;
 window.startYellowBelt = startYellowBelt;
@@ -144,6 +145,7 @@ window.startRedBelt    = startRedBelt;
 window.startBlackBelt  = startBlackBelt;
 window.startBronzeBelt = startBronzeBelt;
 window.startSilverBelt = startSilverBelt;
+window.startGoldBelt = startGoldBelt;
 
 /* Mix helpers */
 function buildMixedBases(bases,total){
@@ -429,3 +431,25 @@ function initApp(){
   setScreen("home-screen");
 }
 window.addEventListener("DOMContentLoaded", initApp);
+
+/* Gold: like Bronze (missing numbers) but using expanded ×10 numbers like Silver */
+function buildGoldQuestions(total){
+  const out = [];
+  const exps = [1,2,3]; // x10, x100, x1000
+  for (let i=0;i<total;i++){
+    const A = randInt(2,12), B = randInt(1,10);
+    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
+    const t = randInt(1,6);
+    // Patterns mirror Bronze but with bigA/bigB and prod
+    if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
+    else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
+    else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
+    else if (t===4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
+    else if (t===5) out.push({ q:`${bigA} × ${bigB}`, a:prod });
+    else           out.push({ q:`${bigB} × ${bigA}`, a:prod });
+  }
+  return shuffle(out).slice(0,total);
+}
