@@ -1,4 +1,4 @@
-/* Times Tables Trainer — script.js (frontpage-GH19)
+/* Times Tables Trainer — script.js (frontpage-GH20)
    Full app: Mini Tests, Ninja Belts, keypad + keyboard, hidden timer, offline queue
 */
 
@@ -121,15 +121,15 @@ function buildMiniQuestions(base, total){
 }
 
 /* ====== Belts ====== */
-function startWhiteBelt() { modeLabel="White Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([3,4], 20),{theme:"white"}); }
-function startYellowBelt(){ modeLabel="Yellow Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([4,6], 20),{theme:"yellow"}); }
-function startOrangeBelt(){ modeLabel="Orange Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([2,3,4,5,6], 20),{theme:"orange"}); }
-function startGreenBelt() { modeLabel="Green Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([4,8], 20),{theme:"green"}); }
-function startBlueBelt()  { modeLabel="Blue Belt";   quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,8], 20),{theme:"blue"}); }
-function startPinkBelt()  { modeLabel="Pink Belt";   quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,9], 20),{theme:"pink"}); }
-function startPurpleBelt(){ modeLabel="Purple Belt (2×–10×)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(20, {min:2,max:10}),{theme:"purple"}); }
-function startRedBelt()   { modeLabel="Red Belt (2×–10×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(20, {min:2,max:10}),{theme:"red"}); }
-function startBlackBelt() { modeLabel="Black Belt (2×–12×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(20, {min:2,max:12}),{theme:"black"}); }
+function startWhiteBelt() { modeLabel="White Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([3,4],20),{theme:"white"}); }
+function startYellowBelt(){ modeLabel="Yellow Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([4,6],20),{theme:"yellow"}); }
+function startOrangeBelt(){ modeLabel="Orange Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([2,3,4,5,6],20),{theme:"orange"}); }
+function startGreenBelt() { modeLabel="Green Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([4,8],20),{theme:"green"}); }
+function startBlueBelt()  { modeLabel="Blue Belt";   quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,8],20),{theme:"blue"}); }
+function startPinkBelt()  { modeLabel="Pink Belt";   quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,9],20),{theme:"pink"}); }
+function startPurpleBelt(){ modeLabel="Purple Belt (2×–10×)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(20,{min:2,max:10}),{theme:"purple"}); }
+function startRedBelt()   { modeLabel="Red Belt (2×–10×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(20,{min:2,max:10}),{theme:"red"}); }
+function startBlackBelt() { modeLabel="Black Belt (2×–12×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(20,{min:2,max:12}),{theme:"black"}); }
 function startBronzeBelt(){ modeLabel="Bronze Belt (blanks)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(20),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (×10 expanded)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(20),{theme:"silver"}); }
 function startGoldBelt(){ modeLabel="Gold Belt (blanks + ×10)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildGoldQuestions(20),{theme:"gold"}); }
@@ -168,35 +168,33 @@ function buildFullyMixed(total, range){
 }
 
 /* Bronze: like Black, but missing numbers using ___ */
-
 function buildBronzeQuestions(total){
   const out = [];
   const half = Math.max(1, Math.floor(total/2));
-  // First half: cycle through blank patterns to guarantee presence
-  for (let i=0;i<half;i++){ 
+  // First half: guarantee blanks cycling patterns 1..4
+  for (let i=0;i<half;i++){
     const A = randInt(2,12), B = randInt(1,10);
     const C = A*B;
-    const t = (i % 4) + 1; // 1..4 cycle
-    if (t===1) out.push({ q:`___ ×  ${A} = ${ C }`, a:B });
-    else if (t===2) out.push({ q:`${ A } × ___ = ${ C }`, a:B });
-    else if (t===3) out.push({ q:`___ ÷ ${ A } = ${ B }`, a:C });
-    else if (t===4) out.push({ q:`${ C } ÷ ___ = ${ B }`, a:A });
+    const t = (i % 4) + 1;
+    if (t===1) out.push({ q:`___ × ${A} = ${C}`, a:B });
+    else if (t===2) out.push({ q:`${A} × ___ = ${C}`, a:B });
+    else if (t===3) out.push({ q:`___ ÷ ${A} = ${B}`, a:C });
+    else if (t===4) out.push({ q:`${C} ÷ ___ = ${B}`, a:A });
   }
-  // Remaining questions: mix of blanks/products similar to original
-  for (let i=half;i<total;i++){ 
+  // Second half: mix blanks and direct products
+  for (let i=half;i<total;i++){
     const A = randInt(2,12), B = randInt(1,10);
     const C = A*B;
     const t = randInt(1,6);
-    if (t===1) out.push({ q:`___ × ${ A } = ${ C }`, a:B });
-    else if (t===2) out.push({ q:`${ A } × ___ = ${ C }`, a:B });
-    else if (t===3) out.push({ q:`___ ÷ ${ A } = ${ B }`, a:C });
-    else if (t===4) out.push({ q:`${ C } ÷ ___ = ${ B }`, a:A });
-    else if (t===5) out.push({ q:`${ A } × ${ B }`, a:C });
-    else           out.push({ q:`${ B } × ${ A }`, a:C });
+    if (t===1) out.push({ q:`___ × ${A} = ${C}`, a:B });
+    else if (t===2) out.push({ q:`${A} × ___ = ${C}`, a:B });
+    else if (t===3) out.push({ q:`___ ÷ ${A} = ${B}`, a:C });
+    else if (t===4) out.push({ q:`${C} ÷ ___ = ${B}`, a:A });
+    else if (t===5) out.push({ q:`${A} × ${B}`, a:C });
+    else          out.push({ q:`${B} × ${A}`, a:C });
   }
   return shuffle(out).slice(0,total);
 }
-
   return shuffle(out).slice(0,total);
 }
 
@@ -452,34 +450,39 @@ function initApp(){
 window.addEventListener("DOMContentLoaded", initApp);
 
 /* Gold: like Bronze (missing numbers) but using expanded ×10 numbers like Silver */
-
 function buildGoldQuestions(total){
   const out = [];
   const half = Math.max(1, Math.floor(total/2));
-  // First half: cycle through blank patterns to guarantee presence
-  for (let i=0;i<half;i++){ 
+  const exps = [0,1,2]; // 1, 10, 100
+  // First half: guarantee blanks cycling patterns 1..4
+  for (let i=0;i<half;i++){
     const A = randInt(2,12), B = randInt(1,10);
-    const exps = [0,1,2]; const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)]; const bigA = A * (10 ** e1); const bigB = B * (10 ** e2); const prod = bigA * bigB;
-    const t = (i % 4) + 1; // 1..4 cycle
-    if (t===1) out.push({ q:`___ ×  ${bigA} = ${ prod }`, a:bigB });
-    else if (t===2) out.push({ q:`${ bigA } × ___ = ${ prod }`, a:bigB });
-    else if (t===3) out.push({ q:`___ ÷ ${ bigA } = ${ bigB }`, a:prod });
-    else if (t===4) out.push({ q:`${ prod } ÷ ___ = ${ bigB }`, a:bigA });
+    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
+    const t = (i % 4) + 1;
+    if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
+    else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
+    else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
+    else if (t===4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
   }
-  // Remaining questions: mix of blanks/products similar to original
-  for (let i=half;i<total;i++){ 
+  // Second half: mix blanks and direct products
+  for (let i=half;i<total;i++){
     const A = randInt(2,12), B = randInt(1,10);
-    const exps = [0,1,2]; const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)]; const bigA = A * (10 ** e1); const bigB = B * (10 ** e2); const prod = bigA * bigB;
+    const e1 = exps[randInt(0,exps.length-1)], e2 = exps[randInt(0,exps.length-1)];
+    const bigA = A * (10 ** e1);
+    const bigB = B * (10 ** e2);
+    const prod = bigA * bigB;
     const t = randInt(1,6);
-    if (t===1) out.push({ q:`___ × ${ bigA } = ${ prod }`, a:bigB });
-    else if (t===2) out.push({ q:`${ bigA } × ___ = ${ prod }`, a:bigB });
-    else if (t===3) out.push({ q:`___ ÷ ${ bigA } = ${ bigB }`, a:prod });
-    else if (t===4) out.push({ q:`${ prod } ÷ ___ = ${ bigB }`, a:bigA });
-    else if (t===5) out.push({ q:`${ bigA } × ${ bigB }`, a:prod });
-    else           out.push({ q:`${ bigB } × ${ bigA }`, a:prod });
+    if (t===1) out.push({ q:`___ × ${bigA} = ${prod}`, a:bigB });
+    else if (t===2) out.push({ q:`${bigA} × ___ = ${prod}`, a:bigB });
+    else if (t===3) out.push({ q:`___ ÷ ${bigA} = ${bigB}`, a:prod });
+    else if (t===4) out.push({ q:`${prod} ÷ ___ = ${bigB}`, a:bigA });
+    else if (t===5) out.push({ q:`${bigA} × ${bigB}`, a:prod });
+    else          out.push({ q:`${bigB} × ${bigA}`, a:prod });
   }
   return shuffle(out).slice(0,total);
 }
-
   return shuffle(out).slice(0,total);
 }
