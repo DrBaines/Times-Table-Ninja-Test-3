@@ -145,7 +145,13 @@ function startBlackBelt() { modeLabel="Black Belt (2×–12×, 100 Q)"; quizSeco
 function startBronzeBelt(){ modeLabel="Bronze Belt (blanks)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(20),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (×10 expanded)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(20),{theme:"silver"}); }
 function startGoldBelt(){ modeLabel="Gold Belt (blanks + ×10)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildGoldQuestions(20),{theme:"gold"}); }
+function startPlatinumBelt(){
+  modeLabel = "Platinum Belt (×10 up to 100)";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildPlatinumQuestions(20), {theme:"platinum"});
+}
 
+window.startPlatinumBelt = startPlatinumBelt;
 window.startWhiteBelt  = startWhiteBelt;
 window.startYellowBelt = startYellowBelt;
 window.startOrangeBelt = startOrangeBelt;
