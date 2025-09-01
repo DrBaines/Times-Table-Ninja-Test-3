@@ -1,4 +1,4 @@
-/* Times Tables Trainer — script.js (frontpage-GH21)
+/* Times Tables Trainer — script.js (frontpage-GH22)
    Full app: Mini Tests, Ninja Belts, keypad + keyboard, hidden timer, offline queue
 */
 
@@ -48,14 +48,18 @@ function syncAnswerMaxLen(){
 
 /* ====== Screens ====== */
 function setScreen(id) {
-  // Map older accidental id to the correct section
-  if (id === "quiz-container") id = "quiz-screen";
-
-  const screens = ["home-screen","mini-screen","ninja-screen","quiz-screen"];
-  screens.forEach(s=>{
-    const el = $(s);
-    if (el) el.style.display = (s===id ? "block" : "none");
-  });
+  try {
+    if (id === "quiz-container") id = "quiz-screen";
+    const screens = ["home-screen","mini-screen","ninja-screen","quiz-screen"];
+    screens.forEach(s=>{
+      const el = document.getElementById(s);
+      if (el) el.style.display = (s===id? "block" : "none");
+    });
+    try { window.scrollTo({top:0, behavior:"instant"}); } catch {}
+    console.log("[nav] setScreen ->", id);
+  } catch (err) {
+    console.error("[nav] setScreen error:", err);
+  }
 }
 window.setScreen = setScreen;
 
@@ -499,4 +503,22 @@ window.addEventListener("DOMContentLoaded", () => {
   if (btnMini) btnMini.addEventListener("click", (e)=>{ try{ e.preventDefault(); }catch{} goMini(); });
   const btnNinja = document.getElementById("btn-ninja");
   if (btnNinja) btnNinja.addEventListener("click", (e)=>{ try{ e.preventDefault(); }catch{} goNinja(); });
+});
+
+// Delegated nav: any element with data-nav switches screens
+window.addEventListener("DOMContentLoaded", () => {
+  document.body.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-nav]");
+    if (!t) return;
+    const target = t.getAttribute("data-nav");
+    if (!target) return;
+    try { e.preventDefault(); } catch {}
+    try { setScreen(target); } catch (err) { 
+      // Fallback direct DOM toggling
+      ["home-screen","mini-screen","ninja-screen","quiz-screen"].forEach(s=>{
+        const el = document.getElementById(s);
+        if (el) el.style.display = (s===target? "block" : "none");
+      });
+    }
+  }, {capture:true});
 });
