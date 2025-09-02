@@ -37,15 +37,33 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.rando
 const randInt=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
 /* ====== Navigation ====== */
+/* ---------- navigation (robust) ---------- */
 function setScreen(id) {
-  if (id === "quiz-container") id = "quiz-screen"; // legacy mapping
-  const screens = ["home-screen","mini-screen","ninja-screen","quiz-screen"];
-  for (let i=0;i<screens.length;i++){
-    const el = $(screens[i]);
-    if (el) el.style.display = (screens[i] === id ? "block" : "none");
+  // Known screens (include both quiz ids to be safe with older/newer HTML)
+  var screens = ["home-screen", "mini-screen", "ninja-screen", "quiz-screen", "quiz-container"];
+
+  // Pick a real target that exists in the DOM
+  var target = id;
+  if (!document.getElementById(target)) {
+    if (id === "quiz-screen" && document.getElementById("quiz-container")) target = "quiz-container";
+    else if (id === "quiz-container" && document.getElementById("quiz-screen")) target = "quiz-screen";
   }
-  try { document.body.setAttribute("data-screen", id); } catch {}
+
+  // Show target; if target is a quiz id, show BOTH quiz nodes if present
+  for (var i = 0; i < screens.length; i++) {
+    var s = screens[i], el = document.getElementById(s);
+    if (!el) continue;
+
+    if ((target === "quiz-screen" || target === "quiz-container") && (s === "quiz-screen" || s === "quiz-container")) {
+      el.style.display = "block";        // show both quiz containers if they exist
+    } else {
+      el.style.display = (s === target ? "block" : "none");
+    }
+  }
+
+  try { document.body.setAttribute("data-screen", target); } catch {}
 }
+
 function goHome(){
   const s = $("score"); if (s) s.innerHTML = "";
   const q = $("question"); if (q){ q.textContent=""; q.style.display=""; }
