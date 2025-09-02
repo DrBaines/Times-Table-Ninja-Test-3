@@ -1,4 +1,4 @@
-/* Times Tables Trainer — script.js (frontpage-GH29)
+/* Times Tables Trainer — script.js (frontpage-GH32)
    Full app: Mini Tests, Ninja Belts, keypad + keyboard, hidden timer, offline queue
 */
 
@@ -36,42 +36,65 @@ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 const randInt=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
-/* ====== Navigation ====== */
-/* ---------- navigation (robust) ---------- */
-function setScreen(id) {
-  // Known screens (include both quiz ids to be safe with older/newer HTML)
-  var screens = ["home-screen", "mini-screen", "ninja-screen", "quiz-screen", "quiz-container"];
+/* ====== Touch detection & iPad keyboard suppression ====== */
+// Detect touch-only (tablets/phones). iPadOS reports touch + coarse pointer.
+const IS_TOUCH = ((('ontouchstart' in window) || (navigator.maxTouchPoints > 0)))
+                 && window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-  // Pick a real target that exists in the DOM
-  var target = id;
+/** Prevent OSK (on-screen keyboard) on iPad/Android while using our custom keypad.
+ *  We keep focus for accessibility, but set readonly + inputmode="none".
+ */
+function suppressOSK(aEl, enable) {
+  if (!aEl) return;
+  if (enable) {
+    aEl.setAttribute('readonly', '');
+    aEl.setAttribute('inputmode', 'none');
+    // Stop taps from momentarily triggering OSK
+    aEl._nokb = (e)=>{ try{ e.preventDefault(); }catch{} aEl.blur(); };
+    aEl.addEventListener('focus', aEl._nokb, {passive:false});
+    aEl.addEventListener('pointerdown', aEl._nokb, {passive:false});
+  } else {
+    aEl.removeAttribute('readonly');
+    aEl.removeAttribute('inputmode');
+    if (aEl._nokb){
+      aEl.removeEventListener('focus', aEl._nokb);
+      aEl.removeEventListener('pointerdown', aEl._nokb);
+      aEl._nokb = null;
+    }
+  }
+}
+
+/* ====== Navigation ====== */
+function setScreen(id) {
+  // Accept both IDs for quiz (compat)
+  const screens = ["home-screen","mini-screen","ninja-screen","quiz-screen","quiz-container"];
+
+  // Pick a target that exists
+  let target = id;
   if (!document.getElementById(target)) {
     if (id === "quiz-screen" && document.getElementById("quiz-container")) target = "quiz-container";
     else if (id === "quiz-container" && document.getElementById("quiz-screen")) target = "quiz-screen";
   }
 
-  // Show target; if target is a quiz id, show BOTH quiz nodes if present
-  for (var i = 0; i < screens.length; i++) {
-    var s = screens[i], el = document.getElementById(s);
+  // Toggle
+  for (let i=0;i<screens.length;i++){
+    const s = screens[i], el = $(s);
     if (!el) continue;
-
     if ((target === "quiz-screen" || target === "quiz-container") && (s === "quiz-screen" || s === "quiz-container")) {
-      el.style.display = "block";        // show both quiz containers if they exist
+      el.style.display = "block"; // show both quiz nodes if present
     } else {
       el.style.display = (s === target ? "block" : "none");
     }
   }
-
   try { document.body.setAttribute("data-screen", target); } catch {}
 }
-
 function goHome(){
   const s = $("score"); if (s) s.innerHTML = "";
   const q = $("question"); if (q){ q.textContent=""; q.style.display=""; }
-  const a = $("answer"); if (a){ a.value=""; a.style.display=""; }
+  const a = $("answer"); if (a){ a.value=""; a.style.display=""; suppressOSK(a, false); }
   setScreen("home-screen");
 }
 function goMini(){
-  // persist name if entered
   const nameInput = $("home-username");
   if (nameInput){
     const val = (nameInput.value || "").trim();
@@ -275,7 +298,13 @@ function preflightAndStart(questions, opts){
   setScreen("quiz-screen");
 
   const qEl = $("question"); if (qEl){ qEl.style.display=""; qEl.textContent=""; }
-  const aEl = $("answer");   if (aEl){ aEl.style.display=""; aEl.value=""; aEl.focus(); }
+  const aEl = $("answer");   if (aEl){
+    aEl.style.display="";
+    aEl.value="";
+    // 🔇 Stop iPad/Android OSK on touch devices (we’ll use our keypad)
+    suppressOSK(aEl, IS_TOUCH);
+    try{ aEl.focus(); aEl.setSelectionRange(aEl.value.length, aEl.value.length); }catch{}
+  }
   const s   = $("score");    if (s){ s.innerHTML=""; }
 
   createKeypad();
@@ -283,7 +312,6 @@ function preflightAndStart(questions, opts){
   startTimer(quizSeconds);
 }
 function getMaxLenForCurrentQuestion(){
-  // Optional UI nicety: cap input length to expected answer digits (1..6)
   try {
     const q = allQuestions[currentIndex];
     const target = (q && typeof q.a !== "undefined") ? String(q.a) : "999999";
@@ -332,6 +360,7 @@ function startTimer(seconds){
 function teardownQuiz(){
   clearInterval(timerInterval); timerInterval=null; ended=true; submitLockedUntil=0;
   if (desktopKeyHandler){ document.removeEventListener("keydown", desktopKeyHandler); desktopKeyHandler=null; }
+  suppressOSK($("answer"), false); // restore normal input behaviour outside quiz
 }
 
 /* ====== Keypad + keyboard ====== */
@@ -377,6 +406,8 @@ function handleKey(val){
 function attachKeyboard(a){
   if (desktopKeyHandler){ document.removeEventListener("keydown", desktopKeyHandler); desktopKeyHandler=null; }
   desktopKeyHandler = (e)=>{
+    // Only allow desktop typing when not touch-only
+    if (IS_TOUCH) return; // we rely on on-screen keypad on touch devices
     const quiz = $("quiz-container"); if(!quiz || quiz.style.display==="none" || ended) return;
     if (!a || a.style.display==="none") return;
     if (/^\d$/.test(e.key)){ e.preventDefault(); if (a.value.length < 10) a.value += e.key; }
@@ -436,7 +467,7 @@ function startGreenBelt(){   modeLabel="Green Belt";   quizSeconds=QUIZ_SECONDS_
 function startBlueBelt(){    modeLabel="Blue Belt";    quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,8],50),            {theme:"blue"}); }
 function startPinkBelt(){    modeLabel="Pink Belt";    quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,9],50),            {theme:"pink"}); }
 function startPurpleBelt(){  modeLabel="Purple Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(50,{min:2,max:10}),   {theme:"purple"}); }
-function startRedBelt(){     modeLabel="Red Belt";     quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(50,{min:2,max:10}),   {theme:"red"}); }
+function startRedBelt(){     modeLabel="Red Belt";     quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:10}),  {theme:"red"}); } // 100Q fixed
 function startBlackBelt(){   modeLabel="Black Belt";   quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),  {theme:"black"}); }
 function startBronzeBelt(){  modeLabel="Bronze Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),           {theme:"bronze"}); }
 function startSilverBelt(){  modeLabel="Silver Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),           {theme:"silver"}); }
