@@ -297,6 +297,13 @@ function preflightAndStart(questions, opts){
 
   setScreen("quiz-screen");
 
+  // 🔹 Set the header text: Dr B TTN — Belt name
+  const title = $("quiz-title");
+  if (title) {
+    const label = (modeLabel && modeLabel.trim()) ? ` — ${modeLabel.trim()}` : "";
+    title.textContent = `Dr B TTN${label}`;
+  }
+
   const qEl = $("question"); if (qEl){ qEl.style.display=""; qEl.textContent=""; }
   const aEl = $("answer");   if (aEl){
     aEl.style.display="";
@@ -443,7 +450,8 @@ function showAnswers(){
   const s=$("score"); if(!s) return;
   let html=`<div class="answers-grid">`;
   for (let i=0;i<allQuestions.length;i++){
-    const q=allQuestions[i]||{}; const uRaw=userAnswers[i];
+    const q=allQuestions[i]||{};
+    const uRaw=userAnswers[i];
     const u=(uRaw===undefined||uRaw==="")?"—":String(uRaw);
     const ok=(uRaw===q.a);
     const hasBlank=(typeof q.q==="string" && q.q.indexOf("___")!==-1);
