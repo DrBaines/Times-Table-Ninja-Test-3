@@ -1,8 +1,7 @@
 /* =========================================================
-   Times Tables Trainer - Stylesheet (frontpage-GH31)
-   - Keypad: fixed right on desktop; bottom-docked on touch devices
-   - Fixed keypad grid (Enter 3 rows tall, Clear top-right, 0 spans 2 cols)
-   - iPad-friendly breakpoints and safe content padding
+   Times Tables Trainer - Stylesheet (frontpage-GH35)
+   - Keypad right on desktop; bottom-docked on touch devices
+   - Answers grid 5 columns with smaller font; wrong = red
    ========================================================= */
 
 * { box-sizing: border-box; }
@@ -55,7 +54,7 @@ body {
 .question-col { display:flex; flex-direction:column; align-items:center; text-align:center; }
 
 /* Keypad positioning + container width (desktop defaults) */
-:root { --pad-right: 360px; --pad-bottom: 340px; } /* --pad-bottom used on touch layouts */
+:root { --pad-right: 360px; --pad-bottom: 340px; }
 #answer-pad {
   position: fixed;
   right: var(--pad-right);
@@ -91,7 +90,7 @@ body {
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
 }
 
-/* Keypad buttons (no manual grid-row/column overrides) */
+/* Keypad buttons */
 #answer-pad .pad-btn {
   width: 100%;
   height: 100%;
@@ -121,7 +120,7 @@ body {
 #answer-pad .pad-btn:active { transform: scale(0.96); background:#f0f0f0; }
 #answer-pad .pad-btn:focus  { outline:3px solid #7aa7ff; outline-offset:2px; }
 
-/* === Area mapping (matches the HTML built by script.js) === */
+/* Keypad area mapping (matches script.js) */
 #answer-pad .pad [data-k="7"]   { grid-area: seven; }
 #answer-pad .pad [data-k="8"]   { grid-area: eight; }
 #answer-pad .pad [data-k="9"]   { grid-area: nine;  }
@@ -136,10 +135,10 @@ body {
 #answer-pad .pad [data-k="2"]   { grid-area: two;   }
 #answer-pad .pad [data-k="3"]   { grid-area: three; }
 
-#answer-pad .pad .key-0         { grid-area: zero;  } /* zero button has class="key-0" */
+#answer-pad .pad .key-0         { grid-area: zero;  }
 #answer-pad .pad .pad-back      { grid-area: back;  }
 
-/* === Touch devices: dock keypad at the bottom to avoid overlap === */
+/* Touch devices: dock keypad at the bottom */
 @media (hover: none) and (pointer: coarse) {
   #answer-pad {
     position: fixed;
@@ -165,13 +164,25 @@ body {
   #answer-pad .pad-btn:not(.pad-enter):not(.pad-clear):not(.pad-back){ font-size:28px; }
   #answer-pad .pad-enter, #answer-pad .pad-clear, #answer-pad .pad-back { font-size: 18px; }
 }
-/* Reduce reserved bottom space when keypad shrinks */
 @media (max-width: 700px) and (hover: none) and (pointer: coarse) {
   :root { --pad-bottom: 260px; }
 }
 
-#welcome-user { font-size: 28px; margin-bottom: 12px; font-weight: normal; color: #333; }
-#hello-user   { font-size: 28px; font-weight: normal; color: #333; }
+/* Answers grid visual styles (5 columns, smaller font; wrong = red) */
+.answers-grid { margin-top: 16px; }
+.answers-grid .answer-chip {
+  font-size: 20px;         /* smaller answers */
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+.answers-grid .answer-chip.correct {
+  color: #2e7d32; background: #edf7ed; border-color: #c8e6c9;
+}
+.answers-grid .answer-chip.wrong {
+  color: #c62828; background: #fff1f1; border-color: #ffcdd2; /* whole item red */
+}
 
 /* Belts grid/cards */
 .belt-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; max-width:1100px; margin:0 auto 30px; padding:0 16px; }
@@ -190,6 +201,9 @@ body {
 .belt-card.black  { background:#e0e0e0; }
 .belt-card.bronze { background:#e7c9a6; }
 .belt-card.silver { background:#d9d9d9; }
+.belt-card.gold   { background:#ffe8a3; }
+.belt-card.platinum { background:#e8edf3; }
+.belt-card.obsidian { background:#1f2937; color:#f3f4f6; }
 
 .belt-card .belt-name { color:#111; }
 .belt-card.green  .belt-name { color:#0b3d0b; }
@@ -200,13 +214,14 @@ body {
 .belt-card.black  .belt-name { color:#111; }
 .belt-card.bronze .belt-name { color:#5c4428; }
 .belt-card.silver .belt-name { color:#222; }
+.belt-card.obsidian .belt-name { color:#fff; }
 
-/* New belts: border accents */
+/* Optional border accents */
 .belt-card.gold     { border-color:#f59e0b; }
 .belt-card.platinum { border-color:#64748b; }
 .belt-card.obsidian { border-color:#111; }
 
-/* Layout tweaks for different widths (desktop side dock) */
+/* Layout tweaks (desktop side dock) */
 @media (max-width: 1024px) { :root{ --pad-right: 120px; } #quiz-container{ max-width: 920px; } }
 @media (max-width: 834px)  { :root{ --pad-right: 80px; }  #quiz-container{ max-width: 860px; } }
 @media (min-width: 1440px) { :root{ --pad-right: clamp(240px, 12vw, 360px); } }
