@@ -314,6 +314,7 @@ function preflightAndStart(questions, opts){
   }
   const s   = $("score");    if (s){ s.innerHTML=""; }
 
+
   createKeypad();
   showQuestion();
   startTimer(quizSeconds);
@@ -447,22 +448,32 @@ function endQuiz(){
   if (s) s.innerHTML = `<div class="result-line"><strong>Score =</strong> ${correct} / ${allQuestions.length}</div><button class="big-button" onclick="showAnswers()">Show answers</button>`;
 }
 function showAnswers(){
-  const s=$("score"); if(!s) return;
-  let html=`<div class="answers-grid">`;
-  for (let i=0;i<allQuestions.length;i++){
-    const q=allQuestions[i]||{};
-    const uRaw=userAnswers[i];
-    const u=(uRaw===undefined||uRaw==="")?"—":String(uRaw);
-    const ok=(uRaw===q.a);
-    const hasBlank=(typeof q.q==="string" && q.q.indexOf("___")!==-1);
-    let displayEq;
-    if (hasBlank) displayEq = q.q.replace("___", `<u>${u}</u>`);
-    else displayEq = `${q.q} = ${u}`;
-    html += `<div class="answer-chip ${ok?"correct":"wrong"}">${displayEq}</div>`;
-  }
-  html += `</div>`; s.innerHTML = html;
-}
+  const s = document.getElementById("score"); if(!s) return;
 
+  // 🔹 EXACTLY 5 COLUMNS; items flow left→right, then wrap to next row.
+  let html = `<div class="answers-grid" style="
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      align-items: start;
+    ">`;
+
+  for (let i = 0; i < allQuestions.length; i++) {
+    const q = allQuestions[i] || {};
+    const uRaw = userAnswers[i];
+    const u = (uRaw === undefined || uRaw === "") ? "—" : String(uRaw);
+    const ok = (uRaw === q.a);
+
+    const hasBlank = (typeof q.q === "string" && q.q.indexOf("___") !== -1);
+    const displayEq = hasBlank ? q.q.replace("___", `<u>${u}</u>`)
+                               : `${q.q} = ${u}`;
+
+    html += `<div class="answer-chip ${ok ? "correct" : "wrong"}">${displayEq}</div>`;
+  }
+
+  html += `</div>`;
+  s.innerHTML = html;
+}
 /* ====== Queue (stub for offline) ====== */
 function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)||"[]"); }catch{ return []; } }
 function setQueue(arr){ try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(arr)); }catch{} }
