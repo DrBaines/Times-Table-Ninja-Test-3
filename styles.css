@@ -36,7 +36,24 @@ body {
 .table-btn:hover { background:#f0f0f0; }
 
 #quiz-title { margin-top:10px; margin-bottom:20px; display:block; }
-.question { font-size: 120px; margin: 0 0 30px; }
+/* Fixed-height band so the answer box stays put */
+.question {
+  font-size: 120px;
+  margin: 0 0 30px;
+  height: 160px;          /* desktop band height */
+  line-height: 160px;     /* vertically center single line */
+  white-space: nowrap;    /* force single line */
+  overflow: hidden;       /* prevent wrapping from pushing layout */
+  text-overflow: clip;    /* (or 'ellipsis' if you prefer …) */
+}
+
+/* Slightly smaller band on iPad/phones */
+@media (max-width: 834px) {
+  .question {
+    height: 120px;
+    line-height: 120px;
+  }
+}
 .answer-input { font-size: 100px; width: 340px; text-align: center; margin-top: 0; }
 .timer { font-size: 50px; margin-top: 30px; display:none !important; }
 .score { font-size: 40px; margin-top: 30px; }
