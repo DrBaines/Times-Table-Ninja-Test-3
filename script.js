@@ -1,12 +1,14 @@
-/* Times Tables Trainer — script.js (frontpage-GH32)
-   Full app: Mini Tests, Ninja Belts, keypad + keyboard, hidden timer, offline queue
+/* Times Tables Trainer — script.js (frontpage-GH35)
+   - Answers 5 columns + smaller font; wrong answers red
+   - Titles: "Dr B TTN — {Belt}" (and Mini)
+   - iPad OSK suppression; robust nav; keypad
 */
 
 /* ====== Config ====== */
-const SHEET_ENDPOINT = ""; // keep empty in demo/offline
+const SHEET_ENDPOINT = ""; // demo/offline
 const SHEET_SECRET   = "";
 
-const QUIZ_SECONDS_DEFAULT = 300; // 5 minutes (hidden timer)
+const QUIZ_SECONDS_DEFAULT = 300; // 5 mins hidden timer
 const QUEUE_KEY = "tttQueueV1";
 const NAME_KEY  = "tttName";
 
@@ -37,19 +39,14 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.rando
 const randInt=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
 /* ====== Touch detection & iPad keyboard suppression ====== */
-// Detect touch-only (tablets/phones). iPadOS reports touch + coarse pointer.
 const IS_TOUCH = ((('ontouchstart' in window) || (navigator.maxTouchPoints > 0)))
                  && window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-/** Prevent OSK (on-screen keyboard) on iPad/Android while using our custom keypad.
- *  We keep focus for accessibility, but set readonly + inputmode="none".
- */
 function suppressOSK(aEl, enable) {
   if (!aEl) return;
   if (enable) {
     aEl.setAttribute('readonly', '');
     aEl.setAttribute('inputmode', 'none');
-    // Stop taps from momentarily triggering OSK
     aEl._nokb = (e)=>{ try{ e.preventDefault(); }catch{} aEl.blur(); };
     aEl.addEventListener('focus', aEl._nokb, {passive:false});
     aEl.addEventListener('pointerdown', aEl._nokb, {passive:false});
@@ -66,22 +63,17 @@ function suppressOSK(aEl, enable) {
 
 /* ====== Navigation ====== */
 function setScreen(id) {
-  // Accept both IDs for quiz (compat)
   const screens = ["home-screen","mini-screen","ninja-screen","quiz-screen","quiz-container"];
-
-  // Pick a target that exists
   let target = id;
   if (!document.getElementById(target)) {
     if (id === "quiz-screen" && document.getElementById("quiz-container")) target = "quiz-container";
     else if (id === "quiz-container" && document.getElementById("quiz-screen")) target = "quiz-screen";
   }
-
-  // Toggle
   for (let i=0;i<screens.length;i++){
     const s = screens[i], el = $(s);
     if (!el) continue;
     if ((target === "quiz-screen" || target === "quiz-container") && (s === "quiz-screen" || s === "quiz-container")) {
-      el.style.display = "block"; // show both quiz nodes if present
+      el.style.display = "block";
     } else {
       el.style.display = (s === target ? "block" : "none");
     }
@@ -170,7 +162,7 @@ function buildFullyMixed(total, range){
   }
   return shuffle(out).slice(0,total);
 }
-/* Bronze: blanks; guarantee >=50% blanks */
+/* Bronze: missing-number + direct forms */
 function buildBronzeQuestions(total){
   const out = [];
   const half = Math.max(1, Math.floor(total/2));
@@ -192,7 +184,7 @@ function buildBronzeQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-/* Silver: expanded ×10 with exps [0,1]; division has no RHS */
+/* Silver: expanded ×10 with exps [0,1] */
 function buildSilverQuestions(total){
   const out = [];
   const exps = [0,1];
@@ -206,7 +198,7 @@ function buildSilverQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-/* Gold: blanks + exps [0,1]; guarantee >=50% blanks */
+/* Gold: like Silver but missing-number forms mixed in (exps [0,1]) */
 function buildGoldQuestions(total){
   const out = [];
   const exps = [0,1];
@@ -247,7 +239,7 @@ function buildPlatinumQuestions(total){
   }
   return shuffle(out).slice(0,total);
 }
-/* Obsidian: like Gold but exps [0,1,2]; guarantee >=50% blanks */
+/* Obsidian: like Gold with exps [0,1,2] */
 function buildObsidianQuestions(total){
   const out = [];
   const exps = [0,1,2];
@@ -283,7 +275,6 @@ function preflightAndStart(questions, opts){
     return;
   }
 
-  // Persist name if present
   try {
     const nameInput = $("home-username");
     const nm = nameInput ? (nameInput.value||"").trim() : "";
@@ -297,7 +288,7 @@ function preflightAndStart(questions, opts){
 
   setScreen("quiz-screen");
 
-  // 🔹 Set the header text: Dr B TTN — Belt name
+  // Title: Dr B TTN — {modeLabel}
   const title = $("quiz-title");
   if (title) {
     const label = (modeLabel && modeLabel.trim()) ? ` — ${modeLabel.trim()}` : "";
@@ -308,12 +299,10 @@ function preflightAndStart(questions, opts){
   const aEl = $("answer");   if (aEl){
     aEl.style.display="";
     aEl.value="";
-    // 🔇 Stop iPad/Android OSK on touch devices (we’ll use our keypad)
     suppressOSK(aEl, IS_TOUCH);
     try{ aEl.focus(); aEl.setSelectionRange(aEl.value.length, aEl.value.length); }catch{}
   }
   const s   = $("score");    if (s){ s.innerHTML=""; }
-
 
   createKeypad();
   showQuestion();
@@ -368,7 +357,7 @@ function startTimer(seconds){
 function teardownQuiz(){
   clearInterval(timerInterval); timerInterval=null; ended=true; submitLockedUntil=0;
   if (desktopKeyHandler){ document.removeEventListener("keydown", desktopKeyHandler); desktopKeyHandler=null; }
-  suppressOSK($("answer"), false); // restore normal input behaviour outside quiz
+  suppressOSK($("answer"), false);
 }
 
 /* ====== Keypad + keyboard ====== */
@@ -414,8 +403,7 @@ function handleKey(val){
 function attachKeyboard(a){
   if (desktopKeyHandler){ document.removeEventListener("keydown", desktopKeyHandler); desktopKeyHandler=null; }
   desktopKeyHandler = (e)=>{
-    // Only allow desktop typing when not touch-only
-    if (IS_TOUCH) return; // we rely on on-screen keypad on touch devices
+    if (IS_TOUCH) return; // on touch, use on-screen keypad only
     const quiz = $("quiz-container"); if(!quiz || quiz.style.display==="none" || ended) return;
     if (!a || a.style.display==="none") return;
     if (/^\d$/.test(e.key)){ e.preventDefault(); if (a.value.length < 10) a.value += e.key; }
@@ -448,23 +436,23 @@ function endQuiz(){
   if (s) s.innerHTML = `<div class="result-line"><strong>Score =</strong> ${correct} / ${allQuestions.length}</div><button class="big-button" onclick="showAnswers()">Show answers</button>`;
 }
 function showAnswers(){
-  const s = document.getElementById("score"); if(!s) return;
+  const s = $("score"); if(!s) return;
 
-  // 🔹 EXACTLY 5 COLUMNS; items flow left→right, then wrap to next row.
+  // EXACTLY 5 columns; items flow left→right, then wrap
   let html = `<div class="answers-grid" style="
-      display: grid;
+      display:grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      align-items: start;
+      gap:8px;
+      align-items:start;
     ">`;
 
-  for (let i = 0; i < allQuestions.length; i++) {
+  for (let i=0;i<allQuestions.length;i++){
     const q = allQuestions[i] || {};
     const uRaw = userAnswers[i];
-    const u = (uRaw === undefined || uRaw === "") ? "—" : String(uRaw);
+    const u = (uRaw===undefined || uRaw==="") ? "—" : String(uRaw);
     const ok = (uRaw === q.a);
-
     const hasBlank = (typeof q.q === "string" && q.q.indexOf("___") !== -1);
+
     const displayEq = hasBlank ? q.q.replace("___", `<u>${u}</u>`)
                                : `${q.q} = ${u}`;
 
@@ -474,6 +462,7 @@ function showAnswers(){
   html += `</div>`;
   s.innerHTML = html;
 }
+
 /* ====== Queue (stub for offline) ====== */
 function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)||"[]"); }catch{ return []; } }
 function setQueue(arr){ try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(arr)); }catch{} }
@@ -486,7 +475,8 @@ function startGreenBelt(){   modeLabel="Green Belt";   quizSeconds=QUIZ_SECONDS_
 function startBlueBelt(){    modeLabel="Blue Belt";    quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,8],50),            {theme:"blue"}); }
 function startPinkBelt(){    modeLabel="Pink Belt";    quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildMixedBases([7,9],50),            {theme:"pink"}); }
 function startPurpleBelt(){  modeLabel="Purple Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(50,{min:2,max:10}),   {theme:"purple"}); }
-function startRedBelt(){     modeLabel="Red Belt";     quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:10}),  {theme:"red"}); } // 100Q fixed
+
+function startRedBelt(){     modeLabel="Red Belt";     quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:10}),  {theme:"red"}); }
 function startBlackBelt(){   modeLabel="Black Belt";   quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),  {theme:"black"}); }
 function startBronzeBelt(){  modeLabel="Bronze Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),           {theme:"bronze"}); }
 function startSilverBelt(){  modeLabel="Silver Belt";  quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),           {theme:"silver"}); }
