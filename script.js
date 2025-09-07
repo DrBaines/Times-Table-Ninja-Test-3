@@ -1,5 +1,7 @@
-/* Times Tables Trainer — script.js (frontpage-GH35)
-   - Answers 5 columns + smaller font; wrong answers red
+/* Times Tables Trainer — script.js (frontpage-GH36)
+   - Answer input stays fixed (question shown in a fixed-height band)
+   - Gold/Silver/Platinum/Obsidian questions forced to a single line, auto-fit smaller
+   - Answers grid single-line, smaller font
    - Titles: "Dr B TTN — {Belt}" (and Mini)
    - iPad OSK suppression; robust nav; keypad
 */
@@ -267,6 +269,30 @@ function buildObsidianQuestions(total){
   return shuffle(out).slice(0,total);
 }
 
+/* ====== Helpers to keep UI stable & single-line ====== */
+// Fixed-height band so the answer box stays in a fixed vertical spot
+function setQuestionFixedBand(qEl){
+  const band = (window.innerWidth <= 834) ? 100 : 140; // iPad/phone vs desktop
+  qEl.style.height = band + "px";
+  qEl.style.lineHeight = band + "px"; // vertically center the single line
+}
+// Auto-fit font size so a single line never wraps
+function fitSingleLine(qEl, startPx, minPx){
+  const step = 4;
+  let size = startPx;
+  qEl.style.fontSize = size + "px";
+  qEl.style.whiteSpace = "nowrap";
+  qEl.style.overflow = "hidden";      // avoid layout jump
+  qEl.style.textOverflow = "clip";    // show full as we shrink
+  // measure and shrink if needed
+  const maxTries = 20;
+  let tries = 0;
+  while (qEl.scrollWidth > qEl.clientWidth && size > minPx && tries++ < maxTries){
+    size -= step;
+    qEl.style.fontSize = size + "px";
+  }
+}
+
 /* ====== Quiz flow ====== */
 function preflightAndStart(questions, opts){
   if (!Array.isArray(questions) || questions.length === 0) {
@@ -331,7 +357,23 @@ function showQuestion(){
     endQuiz();
     return;
   }
-  if (qEl) qEl.textContent = q.q;
+
+  // Put the text in, then format the band and auto-fit
+  if (qEl) {
+    qEl.textContent = q.q;
+
+    // keep input position fixed
+    setQuestionFixedBand(qEl);
+
+    // starting sizes: long belts get a smaller start
+    const isLongBelt = /Silver|Gold|Platinum|Obsidian/.test(modeLabel);
+    const startPx = isLongBelt ? 78 : 110;         // starting font size
+    const minPx   = (window.innerWidth <= 834) ? 44 : 56;  // never go below this
+
+    // ensure one line and shrink if needed
+    fitSingleLine(qEl, startPx, minPx);
+  }
+
   if (aEl) {
     aEl.value = "";
     syncAnswerMaxLen();
@@ -438,7 +480,7 @@ function endQuiz(){
 function showAnswers(){
   const s = $("score"); if(!s) return;
 
-  // EXACTLY 5 columns; items flow left→right, then wrap
+  // EXACTLY 5 columns; items single-line and smaller font
   let html = `<div class="answers-grid" style="
       display:grid;
       grid-template-columns: repeat(5, 1fr);
@@ -456,7 +498,12 @@ function showAnswers(){
     const displayEq = hasBlank ? q.q.replace("___", `<u>${u}</u>`)
                                : `${q.q} = ${u}`;
 
-    html += `<div class="answer-chip ${ok ? "correct" : "wrong"}">${displayEq}</div>`;
+    // Force single-line + smaller font inline (so no CSS edit required)
+    const baseStyle = "white-space:nowrap;font-size:16px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;";
+    const okStyle   = "color:#2e7d32;background:#edf7ed;border-color:#c8e6c9;";
+    const badStyle  = "color:#c62828;background:#fff1f1;border-color:#ffcdd2;";
+
+    html += `<div class="answer-chip ${ok ? "correct" : "wrong"}" style="${baseStyle}${ok ? okStyle : badStyle}">${displayEq}</div>`;
   }
 
   html += `</div>`;
