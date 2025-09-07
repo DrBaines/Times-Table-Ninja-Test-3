@@ -40,6 +40,84 @@ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 const randInt=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
+/* ==== Fixed-position question band + auto-fit helpers ==== */
+
+// Band heights (tweak to taste)
+const BAND_HEIGHT_DESKTOP = 160;
+const BAND_HEIGHT_TABLET  = 120;
+
+// Tablet-ish breakpoint
+function isTabletLike(){
+  return window.matchMedia && matchMedia("(max-width: 834px)").matches;
+}
+
+/**
+ * Ensure the question element sits inside a fixed-height band so
+ * the answer input stays at a constant Y-position.
+ * Returns the band element.
+ */
+function ensureQuestionBand(){
+  const q = document.getElementById("question");
+  if (!q) return null;
+
+  // Already wrapped?
+  if (q.parentElement && q.parentElement.id === "question-band") return q.parentElement;
+
+  // Create band and move #question into it
+  const band = document.createElement("div");
+  band.id = "question-band";
+  band.style.display = "flex";
+  band.style.alignItems = "center";
+  band.style.justifyContent = "center";
+  band.style.width = "100%";
+  band.style.overflow = "hidden";   // prevents growth/line-wrap push
+  band.style.margin = "0 0 20px 0"; // space above answer box
+
+  q.parentElement.insertBefore(band, q);
+  band.appendChild(q);
+
+  // Make sure the question itself is single-line by default
+  q.style.whiteSpace = "nowrap";
+  q.style.overflow = "hidden";
+  q.style.textOverflow = "clip";
+
+  layoutQuestionBand(); // set initial height
+  return band;
+}
+
+/** Set band height based on device width */
+function layoutQuestionBand(){
+  const band = document.getElementById("question-band");
+  if (!band) return;
+  const h = isTabletLike() ? BAND_HEIGHT_TABLET : BAND_HEIGHT_DESKTOP;
+  band.style.height = h + "px";
+}
+
+/**
+ * Shrink font until #question fits on one line within its container.
+ * startPx: starting font size in px (e.g., 110)
+ * minPx:   do not shrink below this (e.g., 56 desktop / 44 tablet)
+ */
+function fitSingleLine(qEl, startPx, minPx){
+  if (!qEl) return;
+  const step = 4;
+  let size = startPx;
+
+  qEl.style.whiteSpace = "nowrap";
+  qEl.style.overflow = "hidden";
+  qEl.style.textOverflow = "clip";
+  qEl.style.fontSize = size + "px";
+
+  let tries = 0, maxTries = 30;
+  while (qEl.scrollWidth > qEl.clientWidth && size > minPx && tries++ < maxTries){
+    size -= step;
+    qEl.style.fontSize = size + "px";
+  }
+}
+
+// Keep a resize ref so we can unhook cleanly
+let _refitOnResize = null;
+
 /* ====== Touch detection & iPad keyboard suppression ====== */
 const IS_TOUCH = ((('ontouchstart' in window) || (navigator.maxTouchPoints > 0)))
                  && window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches;
@@ -349,38 +427,34 @@ function syncAnswerMaxLen(){
 }
 function showQuestion(){
   if (ended) return;
-  const q = allQuestions[currentIndex];
-  const qEl = $("question");
-  const aEl = $("answer");
-  if (!q || typeof q.q !== "string") {
-    console.error("[showQuestion] bad question", currentIndex, q);
+  const qObj = allQuestions[currentIndex];
+  const qEl = document.getElementById("question");
+  const aEl = document.getElementById("answer");
+
+  if (!qObj || typeof qObj.q !== "string") {
+    console.error("[showQuestion] bad question", currentIndex, qObj);
     endQuiz();
     return;
   }
 
-  // Put the text in, then format the band and auto-fit
-  if (qEl) {
-    qEl.textContent = q.q;
+  // Ensure band exists & is sized
+  ensureQuestionBand();
+  layoutQuestionBand();
 
-    // keep input position fixed
-    setQuestionFixedBand(qEl);
-
-    // starting sizes: long belts get a smaller start
-    const isLongBelt = /Silver|Gold|Platinum|Obsidian/.test(modeLabel);
-    const startPx = isLongBelt ? 78 : 110;         // starting font size
-    const minPx   = (window.innerWidth <= 834) ? 44 : 56;  // never go below this
-
-    // ensure one line and shrink if needed
-    fitSingleLine(qEl, startPx, minPx);
-  }
+  // Put text, then shrink-to-fit on a single line
+  qEl.textContent = qObj.q;
+  const isLongBelt = /Silver|Gold|Platinum|Obsidian/.test(modeLabel);
+  const startPx = isLongBelt ? 78 : 110;
+  const minPx   = isTabletLike() ? 44 : 56;
+  fitSingleLine(qEl, startPx, minPx);
 
   if (aEl) {
     aEl.value = "";
-    syncAnswerMaxLen();
     try{ aEl.focus(); aEl.setSelectionRange(aEl.value.length, aEl.value.length); }catch{}
     attachKeyboard(aEl);
   }
 }
+
 function quitFromQuiz(){
   teardownQuiz(); destroyKeypad(); goHome();
 }
