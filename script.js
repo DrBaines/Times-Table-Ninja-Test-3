@@ -157,22 +157,25 @@ function startBlackBelt(){ modeLabel="Black Belt (2×–12×, 100 Q)"; quizSecon
 function startBronzeBelt(){ modeLabel="Bronze Belt (2×–12× + blanks, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (2×–12×, powers of 10, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),{theme:"silver"}); }
 /* GH19 extra belts */
+// GOLD: like Silver (exponents 0,1) but with missing-number blanks
 function startGoldBelt(){
-  modeLabel = "Gold Belt";
+  modeLabel = "Gold Belt (×10 with blanks)";
   quizSeconds = QUIZ_SECONDS_DEFAULT;
-  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"gold"});
+  preflightAndStart(buildPowersMissing(100, [0,1]), { theme: "gold" });
 }
 
+// PLATINUM: like Silver but exponents 0,1,2 (no blanks)
 function startPlatinumBelt(){
-  modeLabel = "Platinum Belt (Missing Numbers)";
+  modeLabel = "Platinum Belt (×10^0..2)";
   quizSeconds = QUIZ_SECONDS_DEFAULT;
-  preflightAndStart(buildBronzeQuestions(100), {theme:"platinum"});
+  preflightAndStart(buildPowersQuestions(100, [0,1,2]), { theme: "platinum" });
 }
 
+// OBSIDIAN: like Platinum but with missing-number blanks
 function startObsidianBelt(){
-  modeLabel = "Obsidian Belt (×10 Factors)";
+  modeLabel = "Obsidian Belt (×10^0..2 with blanks)";
   quizSeconds = QUIZ_SECONDS_DEFAULT;
-  preflightAndStart(buildSilverQuestions(100), {theme:"obsidian"});
+  preflightAndStart(buildPowersMissing(100, [0,1,2]), { theme: "obsidian" });
 }
 
 /* ---------- question builders ---------- */
@@ -264,6 +267,63 @@ function buildSilverQuestions(total){
     const c = A * B;
     if (Math.random() < 0.5) out.push({ q:`${A} × ${B}`, a:c });
     else out.push({ q:`${c} ÷ ${A}`, a:B });
+  }
+  return shuffle(out);
+}
+// Build powers-of-10 questions (Silver-style) with a custom exponent set
+// exps: array like [0,1] or [0,1,2]
+function buildPowersQuestions(total, exps){
+  const bases = [2,3,4,5,6,7,8,9,10,11,12];
+  const out = [];
+  for (let n=0; n<total; n++){
+    const a = bases[Math.floor(Math.random()*bases.length)];
+    const b = bases[Math.floor(Math.random()*bases.length)];
+    const k = exps[Math.floor(Math.random()*exps.length)];
+    const m = exps[Math.floor(Math.random()*exps.length)];
+    const A = a * Math.pow(10, k);
+    const B = b * Math.pow(10, m);
+    const c = A * B;
+    if (Math.random() < 0.5){
+      // A × B = c  → child answers c
+      out.push({ q: `${A} × ${B}`, a: c });
+    } else {
+      // c ÷ A = B  → child answers B
+      out.push({ q: `${c} ÷ ${A}`, a: B });
+    }
+  }
+  return shuffle(out);
+}
+
+// Build powers-of-10 questions with MISSING-NUMBER blanks (___)
+// Uses exactly three underscores as required.
+// exps: array like [0,1] or [0,1,2]
+function buildPowersMissing(total, exps){
+  const bases = [2,3,4,5,6,7,8,9,10,11,12];
+  const out = [];
+  for (let n=0; n<total; n++){
+    const a = bases[Math.floor(Math.random()*bases.length)];
+    const b = bases[Math.floor(Math.random()*bases.length)];
+    const k = exps[Math.floor(Math.random()*exps.length)];
+    const m = exps[Math.floor(Math.random()*exps.length)];
+    const A = a * Math.pow(10, k);
+    const B = b * Math.pow(10, m);
+    const c = A * B;
+
+    // Choose a missing-number pattern (all integer-safe)
+    // 1) ___ × B = c   → answer A
+    // 2) A × ___ = c   → answer B
+    // 3) ___ ÷ A = B   → answer c
+    // 4) c ÷ ___ = B   → answer A
+    const t = Math.floor(Math.random()*4);
+    if (t===0){
+      out.push({ q:`___ × ${B} = ${c}`, a:A });
+    } else if (t===1){
+      out.push({ q:`${A} × ___ = ${c}`, a:B });
+    } else if (t===2){
+      out.push({ q:`___ ÷ ${A} = ${B}`, a:c });
+    } else {
+      out.push({ q:`${c} ÷ ___ = ${B}`, a:A });
+    }
   }
   return shuffle(out);
 }
