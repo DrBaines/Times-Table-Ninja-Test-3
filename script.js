@@ -581,17 +581,20 @@ function endQuiz(){
 }
 
 function showAnswers(){
-  const s = $("score"); if(!s) return;
+  const s = document.getElementById("score"); if (!s) return;
 
-  // EXACTLY 5 columns; items single-line and smaller font
-  let html = `<div class="answers-grid" style="
+  // EXACTLY 5 columns; single-line chips; smaller font
+  let html = `
+    <div class="answers-grid" style="
       display:grid;
       grid-template-columns: repeat(5, 1fr);
       gap:8px;
       align-items:start;
-    ">`;
+      margin-top:10px;
+    ">
+  `;
 
-  for (let i=0;i<allQuestions.length;i++){
+  for (let i=0; i<allQuestions.length; i++){
     const q = allQuestions[i] || {};
     const uRaw = userAnswers[i];
     const u = (uRaw===undefined || uRaw==="") ? "—" : String(uRaw);
@@ -601,7 +604,6 @@ function showAnswers(){
     const displayEq = hasBlank ? q.q.replace("___", `<u>${u}</u>`)
                                : `${q.q} = ${u}`;
 
-    // Force single-line + smaller font inline (so no CSS edit required)
     const baseStyle = "white-space:nowrap;font-size:16px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;";
     const okStyle   = "color:#2e7d32;background:#edf7ed;border-color:#c8e6c9;";
     const badStyle  = "color:#c62828;background:#fff1f1;border-color:#ffcdd2;";
@@ -610,8 +612,18 @@ function showAnswers(){
   }
 
   html += `</div>`;
-  s.innerHTML = html;
+
+  // Put Quit button BELOW the answers
+  html += `
+    <div style="text-align:center;margin-top:16px;">
+      <button class="big-button" onclick="quitFromQuiz()">Quit</button>
+    </div>
+  `;
+
+  s.innerHTML = s.innerHTML.replace(/<button[^>]*showAnswers\([^)]*\)[^>]*>.*?<\/button>/i, ""); // remove the "Show answers" button if present
+  s.innerHTML += html;
 }
+
 
 /* ====== Queue (stub for offline) ====== */
 function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)||"[]"); }catch{ return []; } }
