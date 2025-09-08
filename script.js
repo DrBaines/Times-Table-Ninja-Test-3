@@ -3,7 +3,7 @@
    - Dynamic answer length (+2 headroom)
    - Belt images on menu + quiz mascot (all belts incl. gold/platinum/obsidian)
    - Score line shows "Score ="
-   - Bronze answers: underline filled-in missing number
+   - Bronze answers: underline filled-in missing number 
 */
 
 const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbyIuCIgbFisSKqA0YBtC5s5ATHsHXxoqbZteJ4en7hYrf4AXmxbnMOUfeQ2ERZIERN-/exec";
