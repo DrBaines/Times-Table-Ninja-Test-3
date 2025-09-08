@@ -1,7 +1,8 @@
 /* =========================================================
-   Times Tables Trainer - Stylesheet (frontpage-GH16)
+   Times Tables Trainer - Stylesheet (frontpage-GH19)
+   - Restores quiz/question sizing
+   - Fixed keypad (right), Clear top-right, Enter spans 3 rows
    - Belt images on cards + quiz mascot
-   - Fixed keypad: Clear top-right, Enter tall (3 rows), 0 wide
    ========================================================= */
 
 * { box-sizing: border-box; }
@@ -13,42 +14,35 @@ body {
   color: #111;
 }
 
+/* Layout */
 .center { text-align: center; margin-top: 80px; }
 .title { font-size: 56px; margin: 0 0 20px; }
 .subtitle { font-size: 48px; margin: 0 0 20px; }
 .info-text { font-size: 22px; margin: 10px 0 20px; color: #444; }
 .visually-hidden { position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; clip:rect(0 0 0 0); overflow:hidden; }
 
-.choice-buttons {
-  display: flex; justify-content: center; gap: 16px;
-  margin: 12px 0 30px; flex-wrap: wrap;
-}
+.choice-buttons { display:flex; justify-content:center; gap:16px; margin:12px 0 30px; flex-wrap:wrap; }
 .stack-mobile { gap: 20px; }
 .name-row { margin: 10px 0 20px; }
 
-.big-input {
-  font-size: 44px; padding: 18px; width: 520px; max-width: 92vw; text-align: center;
-}
-
-.big-button { font-size: 28px; padding: 16px 26px; cursor: pointer; border: 2px solid #222; border-radius: 10px; background: #fff; }
-.big-button.primary { background: #4caf50; color: #fff; border-color: #4caf50; }
-.big-button.secondary { background: #ffb300; color: #222; border-color: #ffb300; }
+.big-input { font-size: 44px; padding: 18px; width: 520px; max-width: 92vw; text-align: center; }
+.big-button { font-size: 28px; padding: 16px 26px; cursor:pointer; border:2px solid #222; border-radius:10px; background:#fff; }
+.big-button.primary { background:#4caf50; color:#fff; border-color:#4caf50; }
+.big-button.secondary { background:#ffb300; color:#222; border-color:#ffb300; }
 
 /* Mini test table buttons */
-.table-btn { font-size: 32px; padding: 14px 28px; cursor: pointer; border: 2px solid #333; border-radius: 10px; background: #fff; margin: 6px; }
-.table-btn:hover { background: #f0f0f0; }
+.table-btn { font-size: 32px; padding: 14px 28px; cursor:pointer; border:2px solid #333; border-radius:10px; background:#fff; margin:6px; }
+.table-btn:hover { background:#f0f0f0; }
 
-/* -------- Quiz text & info -------- */
+/* Quiz text & info */
 #quiz-title { margin-top:10px; margin-bottom:20px; display:block; }
-.question { font-size: 120px; margin: 0 0 30px; }
+.question { font-size: 120px; margin: 0 0 30px; line-height:1; }
 .answer-input { font-size: 100px; width: 340px; text-align: center; margin-top: 0; }
 .timer { font-size: 50px; margin-top: 30px; display:none !important; }
 .score { font-size: 40px; margin-top: 30px; }
-
-/* Quiz container chrome */
 #quiz-container { padding: 20px; border-radius: 16px; }
 
-/* -------- Side-by-side layout (question | keypad) -------- */
+/* Side-by-side layout (question | keypad) */
 .quiz-row {
   display: inline-grid;
   grid-template-columns: minmax(380px, auto) auto;
@@ -59,28 +53,15 @@ body {
 }
 .question-col { display:flex; flex-direction:column; align-items:center; text-align:center; }
 
-/* ===== Belt card images ===== */
-.belt-img {
-  display:block;
-  max-width: 120px;
-  max-height: 140px;
-  margin: 6px auto 12px;
-  object-fit: contain;
-}
+/* Belt card images */
+.belt-img { display:block; max-width:120px; max-height:140px; margin:6px auto 12px; object-fit:contain; }
 
-/* ===== Quiz mascot ===== */
-.quiz-mascot {
-  display: none;
-  max-width: 140px;
-  max-height: 160px;
-  object-fit: contain;
-  margin: 0 auto 16px;
-}
-.quiz-mascot.visible { display: block; }
+/* Quiz mascot */
+.quiz-mascot { display:none; max-width:140px; max-height:160px; object-fit:contain; margin:0 auto 16px; }
+.quiz-mascot.visible { display:block; }
 
-/* ======= KEYPAD (fixed, stable) ======= */
-:root { --pad-right: 360px; }
-
+/* ===== Fixed Keypad ===== */
+:root { --pad-right: 340px; }  /* move this value to nudge keypad in/out */
 #answer-pad {
   position: fixed;
   right: var(--pad-right);
@@ -91,8 +72,7 @@ body {
   pointer-events: auto;
   margin: 0;
 }
-
-/* Ensure quiz content never sits under the keypad */
+/* ensure content never sits under keypad */
 #quiz-container {
   padding-right: var(--pad-right);
   margin-left: auto;
@@ -100,7 +80,7 @@ body {
   max-width: 1100px;
 }
 
-/* On-screen keypad: Clear top-right, Enter tall (3 rows), 0 wide */
+/* On-screen keypad grid: Clear top-right, Enter tall (3 rows), 0 wide */
 #answer-pad .pad{
   display: grid;
   grid-template-columns: repeat(4, 70px);
@@ -113,12 +93,15 @@ body {
   gap: 14px;
   padding: 8px 0;
   width: max-content;
-  margin: 0 auto;
   background: transparent;
   border-radius: 12px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.08);
 }
-#answer-pad .pad-btn { border: 2px solid #333; border-radius: 8px; background:#fff; cursor:pointer; user-select:none; touch-action:manipulation; transition: transform .05s, background .1s; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+#answer-pad .pad-btn {
+  border: 2px solid #333; border-radius: 8px; background:#fff; cursor:pointer;
+  user-select:none; touch-action:manipulation; transition: transform .05s, background .1s;
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+}
 #answer-pad .pad-btn:not(.pad-enter):not(.pad-clear):not(.pad-back){ font-size:34px; font-weight:800; color:#007bff; }
 #answer-pad .pad-enter, #answer-pad .pad-clear, #answer-pad .pad-back { font-size:20px; color:#444; background:#e7e7e7; }
 #answer-pad .pad-btn:active { transform: scale(0.96); background:#f0f0f0; }
@@ -130,7 +113,7 @@ body {
 #answer-pad .key-1{grid-area:one;} .key-2{grid-area:two;} .key-3{grid-area:three;}
 #answer-pad .key-0{grid-area:zero;} .key-back{grid-area:back;}
 
-/* -------- Smaller screens (phones) -------- */
+/* Smaller screens */
 @media (max-width: 700px){
   .quiz-row{ display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:40px; }
   .subtitle{ font-size:36px; }
@@ -142,10 +125,7 @@ body {
 }
 
 /* ===== Ninja Belt Grid ===== */
-.belt-grid{
-  display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
-  gap:18px; max-width:1100px; margin:0 auto 30px; padding:0 16px;
-}
+.belt-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:18px; max-width:1100px; margin:0 auto 30px; padding:0 16px; }
 .belt-card{ border:2px solid rgba(0,0,0,0.2); border-radius:16px; padding:18px 16px 20px; text-align:left; box-shadow:0 3px 10px rgba(0,0,0,0.06); }
 .belt-name{ font-size:24px; font-weight:800; margin:6px 0; padding:6px 10px; border-radius:10px; display:inline-block; }
 .belt-desc{ font-size:18px; margin-bottom:6px; }
@@ -163,13 +143,12 @@ body {
 .belt-card.black  { background:#e0e0e0; }
 .belt-card.bronze { background:#e7c9a6; }
 .belt-card.silver { background:#d9d9d9; }
-/* GH17: Extra belt colors */
-.belt-card.gold     { background: #ffe082; }   /* warm gold */
-.belt-card.platinum { background: #e8eaed; }   /* cool platinum */
-.belt-card.obsidian { background: #cfd8dc; }   /* pale slate so quiz bg stays readable */
 
-/* Optional: name text hues for contrast */
+/* GH19: Extra belt colors */
+.belt-card.gold     { background: #ffe082; }
+.belt-card.platinum { background: #e8eaed; }
+.belt-card.obsidian { background: #cfd8dc; }
+
 .belt-card.gold     .belt-name { color: #5b4200; }
 .belt-card.platinum .belt-name { color: #263238; }
 .belt-card.obsidian .belt-name { color: #263238; }
-
