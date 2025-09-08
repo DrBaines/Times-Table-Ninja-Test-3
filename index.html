@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#1e3a8a" />
   <link rel="icon" href="./favicon.ico" />
-  <link rel="stylesheet" href="./styles.css?v=frontpage-GH16" />
+  <link rel="stylesheet" href="./styles.css?v=frontpage-GH19" />
 </head>
 <body>
   <noscript>
@@ -32,16 +32,12 @@
     </div>
 
     <div class="choice-buttons stack-mobile" role="group" aria-label="Main choices">
-      <button type="button" class="big-button primary" onclick="goMini()" aria-label="Mini Tests single tables">
-        Mini Tests (Single Tables)
-      </button>
-      <button type="button" class="big-button secondary" onclick="goNinja()" aria-label="Ninja Belt mixed tables">
-        Ninja Belt (Mixed Tables)
-      </button>
+      <button type="button" class="big-button primary" onclick="goMini()">Mini Tests (Single Tables)</button>
+      <button type="button" class="big-button secondary" onclick="goNinja()">Ninja Belt (Mixed Tables)</button>
     </div>
   </main>
 
-  <!-- ===== MINI TESTS SETUP (single tables) ===== -->
+  <!-- ===== MINI TESTS SETUP ===== -->
   <section id="mini-screen" class="center" style="display:none;" aria-labelledby="mini-title">
     <h2 class="subtitle" id="hello-user"></h2>
     <h2 class="subtitle" id="mini-title" style="font-size:32px; margin-top:10px;">Choose your times table</h2>
@@ -57,7 +53,7 @@
   <section id="ninja-screen" class="center" style="display:none;" aria-labelledby="ninja-title">
     <h2 class="subtitle" id="ninja-title">Ninja Belt</h2>
     <div class="belt-grid">
-
+      <!-- Use your real images inside ./images/. Filenames must match exactly (case-sensitive). -->
       <div class="belt-card white">
         <img src="./images/belt-white.png" alt="White Ninja mascot" class="belt-img" />
         <div class="belt-name">White Ninja Belt</div>
@@ -145,32 +141,31 @@
         <div class="belt-meta">100 Q • 5 min</div>
         <button class="big-button primary" onclick="startSilverBelt()">Start Silver Belt</button>
       </div>
-<!-- GOLD -->
-<div class="belt-card gold">
-  <img src="./images/belt-gold.png" alt="Gold Ninja mascot" class="belt-img" />
-  <div class="belt-name">Gold Ninja Belt</div>
-  <div class="belt-desc">Fully mixed: 2x – 12x</div>
-  <div class="belt-meta">100 Q • 5 min</div>
-  <button class="big-button primary" onclick="startGoldBelt()">Start Gold Belt</button>
-</div>
 
-<!-- PLATINUM -->
-<div class="belt-card platinum">
-  <img src="./images/belt-platinum.png" alt="Platinum Ninja mascot" class="belt-img" />
-  <div class="belt-name">Platinum Ninja Belt</div>
-  <div class="belt-desc">Fully mixed: 2x – 12x</div>
-  <div class="belt-meta">100 Q • 5 min</div>
-  <button class="big-button primary" onclick="startPlatinumBelt()">Start Platinum Belt</button>
-</div>
+      <!-- GH19: Extra belts -->
+      <div class="belt-card gold">
+        <img src="./images/belt-gold.png" alt="Gold Ninja mascot" class="belt-img" />
+        <div class="belt-name">Gold Ninja Belt</div>
+        <div class="belt-desc">Fully mixed: 2x – 12x</div>
+        <div class="belt-meta">100 Q • 5 min</div>
+        <button class="big-button primary" onclick="startGoldBelt()">Start Gold Belt</button>
+      </div>
 
-<!-- OBSIDIAN -->
-<div class="belt-card obsidian">
-  <img src="./images/belt-obsidian.png" alt="Obsidian Ninja mascot" class="belt-img" />
-  <div class="belt-name">Obsidian Ninja Belt</div>
-  <div class="belt-desc">Fully mixed: 2x – 12x</div>
-  <div class="belt-meta">100 Q • 5 min</div>
-  <button class="big-button primary" onclick="startObsidianBelt()">Start Obsidian Belt</button>
-</div>
+      <div class="belt-card platinum">
+        <img src="./images/belt-platinum.png" alt="Platinum Ninja mascot" class="belt-img" />
+        <div class="belt-name">Platinum Ninja Belt</div>
+        <div class="belt-desc">Fully mixed: 2x – 12x</div>
+        <div class="belt-meta">100 Q • 5 min</div>
+        <button class="big-button primary" onclick="startPlatinumBelt()">Start Platinum Belt</button>
+      </div>
+
+      <div class="belt-card obsidian">
+        <img src="./images/belt-obsidian.png" alt="Obsidian Ninja mascot" class="belt-img" />
+        <div class="belt-name">Obsidian Ninja Belt</div>
+        <div class="belt-desc">Fully mixed: 2x – 12x</div>
+        <div class="belt-meta">100 Q • 5 min</div>
+        <button class="big-button primary" onclick="startObsidianBelt()">Start Obsidian Belt</button>
+      </div>
     </div>
 
     <div class="choice-buttons"><button class="big-button" onclick="goHome()">Back</button></div>
@@ -179,8 +174,6 @@
   <!-- ===== QUIZ UI ===== -->
   <section id="quiz-container" class="center" style="display:none;" aria-labelledby="quiz-title">
     <h2 id="quiz-title" class="subtitle">Quiz</h2>
-
-    <!-- Belt mascot for quiz -->
     <img id="quiz-mascot" class="quiz-mascot" src="" alt="" />
 
     <div class="quiz-row">
@@ -210,6 +203,6 @@
     </div>
   </section>
 
-  <script src="./script.js?v=frontpage-GH16" defer></script>
+  <script src="./script.js?v=frontpage-GH19" defer></script>
 </body>
 </html>
