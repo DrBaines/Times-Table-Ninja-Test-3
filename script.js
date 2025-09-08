@@ -551,18 +551,35 @@ function safeSubmit(){
 
 /* ====== End & Answers ====== */
 function endQuiz(){
-  teardownQuiz(); destroyKeypad();
-  const qEl=$("question"); if (qEl) qEl.style.display="none";
-  const aEl=$("answer"); if (aEl) aEl.style.display="none";
-  let correct=0;
-  for (let i=0;i<allQuestions.length;i++){
-    const c=Number(allQuestions[i].a);
-    const u=(userAnswers[i]===""?NaN:Number(userAnswers[i]));
-    if (!Number.isNaN(u) && u===c) correct++;
+  teardownQuiz();
+  destroyKeypad();
+
+  const qEl = document.getElementById("question"); if (qEl) qEl.style.display = "none";
+  const aEl = document.getElementById("answer");   if (aEl) aEl.style.display = "none";
+
+  // Tally score
+  let correct = 0;
+  for (let i=0; i<allQuestions.length; i++){
+    const c = Number(allQuestions[i].a);
+    const u = (userAnswers[i]==="" ? NaN : Number(userAnswers[i]));
+    if (!Number.isNaN(u) && u === c) correct++;
   }
-  const s=$("score");
-  if (s) s.innerHTML = `<div class="result-line"><strong>Score =</strong> ${correct} / ${allQuestions.length}</div><button class="big-button" onclick="showAnswers()">Show answers</button>`;
+
+  // Name for header
+  const username = (localStorage.getItem(NAME_KEY) || "").trim() || "Player";
+
+  // Score goes at the top next to the user name
+  const s = document.getElementById("score");
+  if (s){
+    s.innerHTML = `
+      <div class="result-line" style="font-size:28px;margin:8px 0 14px;">
+        <strong>${username}</strong> — Score: <strong>${correct} / ${allQuestions.length}</strong>
+      </div>
+      <button class="big-button" onclick="showAnswers()">Show answers</button>
+    `;
+  }
 }
+
 function showAnswers(){
   const s = $("score"); if(!s) return;
 
