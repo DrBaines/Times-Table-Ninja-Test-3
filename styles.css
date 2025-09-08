@@ -124,6 +124,38 @@ body {
   #answer-pad .pad-enter, #answer-pad .pad-clear, #answer-pad .pad-back{ font-size:18px; }
 }
 
+/* GH21: iOS tweaks */
+
+/* Hide caret when the input is readOnly on iOS (so no blinking cursor) */
+.answer-input[readonly] { caret-color: transparent; }
+
+/* On iPad/iPhone, dock the keypad to the bottom-right and reserve space below */
+body.ios #answer-pad {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  top: auto;
+  transform: none;
+  z-index: 1000;
+}
+
+/* Reserve space so the keypad never covers question/answer */
+body.ios #quiz-container {
+  padding-right: 20px;      /* not needed on the right when docked bottom */
+  padding-bottom: 260px;    /* match keypad height */
+}
+
+/* Slightly smaller keys on iPad so everything fits comfortably */
+body.ios #answer-pad .pad {
+  grid-template-columns: repeat(4, 64px);
+  grid-auto-rows: 64px;
+  gap: 10px;
+}
+
+/* Keep your existing desktop/right-docked layout untouched.
+   If you previously used a --pad-right variable for desktop, it still applies
+   because these iOS rules only apply when <body> has class="ios". */
+
 /* ===== Ninja Belt Grid ===== */
 .belt-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:18px; max-width:1100px; margin:0 auto 30px; padding:0 16px; }
 .belt-card{ border:2px solid rgba(0,0,0,0.2); border-radius:16px; padding:18px 16px 20px; text-align:left; box-shadow:0 3px 10px rgba(0,0,0,0.06); }
