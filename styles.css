@@ -65,13 +65,14 @@ body {
   --qband-tablet:  120px;
 }
 .question-col {
-  display: grid;                 /* turn the column into a mini grid */
-  grid-template-rows: var(--qband-desktop) auto auto auto;  /* band + rest */
-  align-items: start;            /* do not vertically center; keep rows stable */
-  justify-items: center;         /* center children horizontally */
+  display: grid;
+  grid-template-rows: var(--qband-desktop) auto auto auto;
+  align-items: start;          /* already good */
+  justify-items: start;        /* ⬅️ was "center", change to "start" */
   row-gap: 0;
-  text-align: center;
+  text-align: left;            /* ⬅️ was "center" */
 }
+
 
 /* Place core elements into explicit rows */
 #question { 
@@ -81,14 +82,21 @@ body {
   white-space: nowrap;           /* single line; script can auto-shrink font */
   overflow: hidden; 
   text-overflow: clip;
-  display: inline-block;         /* stable inline box */
+  display: inline-block; 
+     justify-self: start;
+  text-align: left;/* stable inline box */
 }
-#answer   { grid-row: 2; }
+#answer   { grid-row: 2; justify-self: start;
+  text-align: left; }
 #timer    { grid-row: 3; }
 
 /* Shorter band on iPad/phones */
 @media (max-width: 834px) {
-  .question-col { grid-template-rows: var(--qband-tablet) auto auto auto; }
+  .question-col {
+    grid-template-rows: var(--qband-tablet) auto auto auto;
+    justify-items: start;   /* ensure left-justified here too */
+    text-align: left;
+  }
 }
 
 /* ---------- Keypad positioning + container width (desktop defaults) ---------- */
