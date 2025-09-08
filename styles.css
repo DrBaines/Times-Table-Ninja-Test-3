@@ -61,7 +61,7 @@ body {
 .quiz-mascot.visible { display:block; }
 
 /* ===== Fixed Keypad ===== */
-:root { --pad-right: 340px; }  /* move this value to nudge keypad in/out */
+:root { --pad-right: 100px; }  /* move this value to nudge keypad in/out */
 #answer-pad {
   position: fixed;
   right: var(--pad-right);
