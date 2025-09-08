@@ -28,6 +28,10 @@ const BELT_IMAGES = {
   black:  "./images/belt-black.png",
   bronze: "./images/belt-bronze.png",
   silver: "./images/belt-silver.png",
+     gold:    "./images/belt-gold.png",
+  platinum:"./images/belt-platinum.png",
+  obsidian:"./images/belt-obsidian.png",
+
 };
 
 let userName = "";
@@ -133,7 +137,21 @@ function startRedBelt(){ modeLabel="Red Belt (2×–10×, 100 Q)"; quizSeconds=Q
 function startBlackBelt(){ modeLabel="Black Belt (2×–12×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"black"}); }
 function startBronzeBelt(){ modeLabel="Bronze Belt (2×–12× + blanks, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (2×–12×, powers of 10, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),{theme:"silver"}); }
-
+function startGoldBelt(){
+  modeLabel = "Gold Belt";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"gold"});
+}
+function startPlatinumBelt(){
+  modeLabel = "Platinum Belt";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"platinum"});
+}
+function startObsidianBelt(){
+  modeLabel = "Obsidian Belt";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"obsidian"});
+}
 /* ---------- question builders ---------- */
 function buildMiniQuestions(base, total){
   const out = [];
@@ -466,7 +484,9 @@ window.safeSubmit = safeSubmit; window.startTimer = startTimer; window.endQuiz =
 window.startWhiteBelt  = startWhiteBelt; window.startYellowBelt = startYellowBelt; window.startOrangeBelt = startOrangeBelt;
 window.startGreenBelt  = startGreenBelt; window.startBlueBelt   = startBlueBelt;  window.startPinkBelt   = startPinkBelt;
 window.startPurpleBelt = startPurpleBelt; window.startRedBelt    = startRedBelt;    window.startBlackBelt  = startBlackBelt;
-window.startBronzeBelt = startBronzeBelt; window.startSilverBelt = startSilverBelt;
+window.startBronzeBelt = startBronzeBelt; window.startSilverBelt = startSilverBelt;window.startGoldBelt = startGoldBelt;
+window.startPlatinumBelt = startPlatinumBelt;
+window.startObsidianBelt = startObsidianBelt;
 
 /* ---------- init ---------- */
 function initApp(){
