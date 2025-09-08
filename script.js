@@ -1,7 +1,7 @@
-/* Times Tables Trainer — script.js (frontpage-GH16)
-   - Belt images on menu + quiz mascot for all belts
-   - Dynamic answer length (+2 digits headroom)
-   - Fixed keypad layout (Clear top-right, Enter spans 3 rows)
+/* Times Tables Trainer — script.js (frontpage-GH19)
+   - Restores keypad layout + fixed position (matches styles)
+   - Dynamic answer length (+2 headroom)
+   - Belt images on menu + quiz mascot (all belts incl. gold/platinum/obsidian)
    - Score line shows "Score ="
    - Bronze answers: underline filled-in missing number
 */
@@ -15,7 +15,7 @@ const EXTRA_DIGITS_ALLOWED = 2;
 const QUEUE_KEY            = "tttQueueV1";
 const NAME_KEY             = "tttName";
 
-// Image paths for belts (put these PNGs under /images/)
+// Images used for quiz mascot (menu cards use <img> in HTML)
 const BELT_IMAGES = {
   white:  "./images/belt-white.png",
   yellow: "./images/belt-yellow.png",
@@ -28,10 +28,9 @@ const BELT_IMAGES = {
   black:  "./images/belt-black.png",
   bronze: "./images/belt-bronze.png",
   silver: "./images/belt-silver.png",
-     gold:    "./images/belt-gold.png",
+  gold:   "./images/belt-gold.png",
   platinum:"./images/belt-platinum.png",
   obsidian:"./images/belt-obsidian.png",
-
 };
 
 let userName = "";
@@ -137,21 +136,11 @@ function startRedBelt(){ modeLabel="Red Belt (2×–10×, 100 Q)"; quizSeconds=Q
 function startBlackBelt(){ modeLabel="Black Belt (2×–12×, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"black"}); }
 function startBronzeBelt(){ modeLabel="Bronze Belt (2×–12× + blanks, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (2×–12×, powers of 10, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),{theme:"silver"}); }
-function startGoldBelt(){
-  modeLabel = "Gold Belt";
-  quizSeconds = QUIZ_SECONDS_DEFAULT;
-  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"gold"});
-}
-function startPlatinumBelt(){
-  modeLabel = "Platinum Belt";
-  quizSeconds = QUIZ_SECONDS_DEFAULT;
-  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"platinum"});
-}
-function startObsidianBelt(){
-  modeLabel = "Obsidian Belt";
-  quizSeconds = QUIZ_SECONDS_DEFAULT;
-  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"obsidian"});
-}
+/* GH19 extra belts */
+function startGoldBelt(){ modeLabel="Gold Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"gold"}); }
+function startPlatinumBelt(){ modeLabel="Platinum Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"platinum"}); }
+function startObsidianBelt(){ modeLabel="Obsidian Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"obsidian"}); }
+
 /* ---------- question builders ---------- */
 function buildMiniQuestions(base, total){
   const out = [];
@@ -233,7 +222,7 @@ function buildSilverQuestions(total){
   const out = [];
   for (let n=0;n<total;n++){
     const a = bases[Math.floor(Math.random()*bases.length)];
-       const b = bases[Math.floor(Math.random()*bases.length)];
+    const b = bases[Math.floor(Math.random()*bases.length)];
     const k = pow[Math.floor(Math.random()*pow.length)];
     const m = pow[Math.floor(Math.random()*pow.length)];
     const A = a * Math.pow(10, k);
@@ -261,12 +250,8 @@ function preflightAndStart(questions, opts={}){
   const title = $("quiz-title");
   if (title) title.textContent = modeLabel || "Quiz";
 
-  // Mascot for belts
-  if (opts.theme && BELT_IMAGES[opts.theme]){
-    showMascot(BELT_IMAGES[opts.theme], `${modeLabel} mascot`);
-  } else {
-    hideMascot();
-  }
+  if (opts.theme && BELT_IMAGES[opts.theme]){ showMascot(BELT_IMAGES[opts.theme], `${modeLabel} mascot`); }
+  else { hideMascot(); }
 
   showQuestion();
   startTimer(quizSeconds);
@@ -329,18 +314,12 @@ function teardownQuiz(){
 
 /* ---------- mascot helpers ---------- */
 function showMascot(src, alt){
-  const m = $("quiz-mascot");
-  if (!m) return;
-  m.src = src;
-  m.alt = alt || "Belt mascot";
-  m.classList.add("visible");
+  const m = $("quiz-mascot"); if(!m) return;
+  m.src = src; m.alt = alt || "Belt mascot"; m.classList.add("visible");
 }
 function hideMascot(){
-  const m = $("quiz-mascot");
-  if (!m) return;
-  m.classList.remove("visible");
-  m.removeAttribute("src");
-  m.alt = "";
+  const m = $("quiz-mascot"); if(!m) return;
+  m.classList.remove("visible"); m.removeAttribute("src"); m.alt = "";
 }
 
 /* ---------- end & answers ---------- */
@@ -358,9 +337,7 @@ function endQuiz(){
   const s = $("score");
   if (s){
     s.innerHTML = `
-      <div class="result-line">
-        <strong>Score =</strong> ${correct} / ${allQuestions.length}
-      </div>
+      <div class="result-line"><strong>Score =</strong> ${correct} / ${allQuestions.length}</div>
       <button class="big-button" onclick="showAnswers()">Show answers</button>
     `;
   }
@@ -379,8 +356,8 @@ function showAnswers(){
     const u = (uRaw === undefined || uRaw === "") ? "—" : String(uRaw);
     const correct = (uRaw === q.a);
     const hasBlank = (typeof q.q === "string" && q.q.indexOf("___") !== -1);
-    let displayEq = hasBlank ? q.q.replace("___", `<u>${u}</u>`) : `${q.q} = ${u}`;
-    html += `<div style="font-size:22px;font-weight:bold;color:${correct?'green':'red'};text-align:left;">${displayEq}</div>`;
+    const display = hasBlank ? q.q.replace("___", `<u>${u}</u>`) : `${q.q} = ${u}`;
+    html += `<div style="font-size:22px;font-weight:bold;color:${correct?'green':'red'};text-align:left;">${display}</div>`;
   }
   html += "</div>";
   s.insertAdjacentHTML("beforeend", html);
@@ -391,19 +368,19 @@ function createKeypad(){
   const host = $("answer-pad"); if(!host) return;
   host.innerHTML = `
     <div class="pad">
-      <button class="pad-btn key-7"     data-k="7">7</button>
-      <button class="pad-btn key-8"     data-k="8">8</button>
-      <button class="pad-btn key-9"     data-k="9">9</button>
+      <button class="pad-btn key-7" data-k="7">7</button>
+      <button class="pad-btn key-8" data-k="8">8</button>
+      <button class="pad-btn key-9" data-k="9">9</button>
       <button class="pad-btn pad-clear key-clear" data-k="clear">Clear</button>
 
-      <button class="pad-btn key-4"     data-k="4">4</button>
-      <button class="pad-btn key-5"     data-k="5">5</button>
-      <button class="pad-btn key-6"     data-k="6">6</button>
+      <button class="pad-btn key-4" data-k="4">4</button>
+      <button class="pad-btn key-5" data-k="5">5</button>
+      <button class="pad-btn key-6" data-k="6">6</button>
       <button class="pad-btn pad-enter key-enter" data-k="enter">Enter</button>
 
-      <button class="pad-btn key-1"     data-k="1">1</button>
-      <button class="pad-btn key-2"     data-k="2">2</button>
-      <button class="pad-btn key-3"     data-k="3">3</button>
+      <button class="pad-btn key-1" data-k="1">1</button>
+      <button class="pad-btn key-2" data-k="2">2</button>
+      <button class="pad-btn key-3" data-k="3">3</button>
 
       <button class="pad-btn key-0 pad-wide" data-k="0">0</button>
       <button class="pad-btn pad-back key-back" data-k="back">⌫</button>
@@ -481,12 +458,12 @@ window.goHome = goHome; window.goMini = goMini; window.goNinja = goNinja; window
 window.startQuiz = startQuiz; window.buildTableButtons = buildTableButtons; window.selectTable = selectTable;
 window.preflightAndStart = preflightAndStart; window.showQuestion = showQuestion; window.handleKey = handleKey;
 window.safeSubmit = safeSubmit; window.startTimer = startTimer; window.endQuiz = endQuiz; window.showAnswers = showAnswers;
-window.startWhiteBelt  = startWhiteBelt; window.startYellowBelt = startYellowBelt; window.startOrangeBelt = startOrangeBelt;
-window.startGreenBelt  = startGreenBelt; window.startBlueBelt   = startBlueBelt;  window.startPinkBelt   = startPinkBelt;
+
+window.startWhiteBelt  = startWhiteBelt;  window.startYellowBelt = startYellowBelt; window.startOrangeBelt = startOrangeBelt;
+window.startGreenBelt  = startGreenBelt;  window.startBlueBelt   = startBlueBelt;  window.startPinkBelt   = startPinkBelt;
 window.startPurpleBelt = startPurpleBelt; window.startRedBelt    = startRedBelt;    window.startBlackBelt  = startBlackBelt;
-window.startBronzeBelt = startBronzeBelt; window.startSilverBelt = startSilverBelt;window.startGoldBelt = startGoldBelt;
-window.startPlatinumBelt = startPlatinumBelt;
-window.startObsidianBelt = startObsidianBelt;
+window.startBronzeBelt = startBronzeBelt; window.startSilverBelt = startSilverBelt;
+window.startGoldBelt   = startGoldBelt;   window.startPlatinumBelt = startPlatinumBelt; window.startObsidianBelt = startObsidianBelt;
 
 /* ---------- init ---------- */
 function initApp(){
