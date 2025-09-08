@@ -163,3 +163,13 @@ body {
 .belt-card.black  { background:#e0e0e0; }
 .belt-card.bronze { background:#e7c9a6; }
 .belt-card.silver { background:#d9d9d9; }
+/* GH17: Extra belt colors */
+.belt-card.gold     { background: #ffe082; }   /* warm gold */
+.belt-card.platinum { background: #e8eaed; }   /* cool platinum */
+.belt-card.obsidian { background: #cfd8dc; }   /* pale slate so quiz bg stays readable */
+
+/* Optional: name text hues for contrast */
+.belt-card.gold     .belt-name { color: #5b4200; }
+.belt-card.platinum .belt-name { color: #263238; }
+.belt-card.obsidian .belt-name { color: #263238; }
+
