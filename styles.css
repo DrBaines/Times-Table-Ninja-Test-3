@@ -155,6 +155,33 @@ body.ios #answer-pad .pad {
 /* Keep your existing desktop/right-docked layout untouched.
    If you previously used a --pad-right variable for desktop, it still applies
    because these iOS rules only apply when <body> has class="ios". */
+/* GH24: Print layout for answers */
+@media print {
+  /* Hide everything except the score/answers area */
+  body * { visibility: hidden !important; }
+  #score, #score * { visibility: visible !important; }
+
+  /* Use full page width for the grid */
+  #score [data-answers-grid="1"] {
+    max-width: none !important;
+    margin: 0 !important;
+    gap: 8px !important;
+    grid-template-columns: repeat(3, 1fr) !important; /* 3 cols prints larger; change to 5 if preferred */
+  }
+
+  /* Make text darker and readable on white paper */
+  #score [data-answers-grid="1"] > div {
+    color: #000 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Hide buttons/timer/mascot/etc. */
+  .big-button, .choice-buttons, #answer-pad, #timer, #quiz-mascot { display: none !important; }
+
+  /* Use minimal margins */
+  @page { margin: 12mm; }
+}
 
 /* ===== Ninja Belt Grid ===== */
 .belt-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:18px; max-width:1100px; margin:0 auto 30px; padding:0 16px; }
