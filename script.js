@@ -421,8 +421,8 @@ function hideMascot(){
 function endQuiz(){
   teardownQuiz();
   destroyKeypad();
-enableIOSNoKeyboard(false);
-   
+  enableIOSNoKeyboard && enableIOSNoKeyboard(false);
+
   let correct = 0;
   for (let i=0;i<allQuestions.length;i++){
     const c = Number(allQuestions[i].a);
@@ -430,11 +430,15 @@ enableIOSNoKeyboard(false);
     if (!Number.isNaN(u) && u===c) correct++;
   }
 
-  const s = $("score");
+  const s = document.getElementById("score");
   if (s){
     s.innerHTML = `
       <div class="result-line"><strong>Score =</strong> ${correct} / ${allQuestions.length}</div>
-      <button class="big-button" onclick="showAnswers()">Show answers</button>
+      <div class="choice-buttons" style="margin-top:16px;">
+        <button class="big-button" onclick="showAnswers()">Show answers</button>
+        <button class="big-button" onclick="printAnswers()">Print answers</button>
+        <button class="big-button" onclick="quitFromQuiz()">Quit to Home</button>
+      </div>
     `;
   }
 
@@ -443,9 +447,33 @@ enableIOSNoKeyboard(false);
     flushQueue();
   }catch(e){}
 }
+
+// NEW: ensure answers are rendered, then open print dialog
+function printAnswers(){
+  const s = document.getElementById("score");
+  if (!s) return;
+  // If answers grid isn't present yet, render it first
+  if (!s.querySelector('[data-answers-grid="1"]')){
+    showAnswers();
+    // Allow DOM to paint, then print
+    setTimeout(()=>window.print(), 50);
+  } else {
+    window.print();
+  }
+}
+
 function showAnswers(){
-  const s = $("score"); if(!s) return;
-  let html = `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;justify-items:start;max-width:1200px;margin:20px auto;">`;
+  const s = document.getElementById("score"); if(!s) return;
+  let html = `
+    <div data-answers-grid="1" style="
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      justify-items: start;
+      max-width: 1200px;
+      margin: 20px auto;
+    ">
+  `;
   for (let i=0;i<allQuestions.length;i++){
     const q = allQuestions[i] || {};
     const uRaw = userAnswers[i];
@@ -458,6 +486,7 @@ function showAnswers(){
   html += "</div>";
   s.insertAdjacentHTML("beforeend", html);
 }
+
 
 /* ---------- keypad ---------- */
 function createKeypad(){
@@ -560,6 +589,7 @@ window.startGreenBelt  = startGreenBelt;  window.startBlueBelt   = startBlueBelt
 window.startPurpleBelt = startPurpleBelt; window.startRedBelt    = startRedBelt;    window.startBlackBelt  = startBlackBelt;
 window.startBronzeBelt = startBronzeBelt; window.startSilverBelt = startSilverBelt;
 window.startGoldBelt   = startGoldBelt;   window.startPlatinumBelt = startPlatinumBelt; window.startObsidianBelt = startObsidianBelt;
+window.printAnswers = printAnswers;
 
 /* ---------- init ---------- */
 function initApp(){
