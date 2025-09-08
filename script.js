@@ -548,42 +548,8 @@ function safeSubmit(){
   currentIndex++; if (currentIndex >= allQuestions.length){ endQuiz(); return; }
   showQuestion();
 }
-
-/* ====== End & Answers ====== */
-function endQuiz(){
-  teardownQuiz();
-  destroyKeypad();
-
-  const qEl = document.getElementById("question"); if (qEl) qEl.style.display = "none";
-  const aEl = document.getElementById("answer");   if (aEl) aEl.style.display = "none";
-
-  // Tally score
-  let correct = 0;
-  for (let i=0; i<allQuestions.length; i++){
-    const c = Number(allQuestions[i].a);
-    const u = (userAnswers[i]==="" ? NaN : Number(userAnswers[i]));
-    if (!Number.isNaN(u) && u === c) correct++;
-  }
-
-  // Name for header
-  const username = (localStorage.getItem(NAME_KEY) || "").trim() || "Player";
-
-  // Score goes at the top next to the user name
-  const s = document.getElementById("score");
-  if (s){
-    s.innerHTML = `
-      <div class="result-line" style="font-size:28px;margin:8px 0 14px;">
-        <strong>${username}</strong> — Score: <strong>${correct} / ${allQuestions.length}</strong>
-      </div>
-      <button class="big-button" onclick="showAnswers()">Show answers</button>
-    `;
-  }
-}
-
-function showAnswers(){
-  const s = document.getElementById("score"); if (!s) return;
-
-  // EXACTLY 5 columns; single-line chips; smaller font
+// Build the 5-column answers grid HTML (also used by Print)
+function buildAnswersHTML(){
   let html = `
     <div class="answers-grid" style="
       display:grid;
@@ -612,17 +578,114 @@ function showAnswers(){
   }
 
   html += `</div>`;
+  return html;
+}
+function printResults(){
+  let correct = 0;
+  for (let i=0; i<allQuestions.length; i++){
+    const c = Number(allQuestions[i].a);
+    const u = (userAnswers[i]==="" ? NaN : Number(userAnswers[i]));
+    if (!Number.isNaN(u) && u === c) correct++;
+  }
+  const username = (localStorage.getItem(NAME_KEY) || "").trim() || "Player";
+  const today = formatToday();
+  const answersHTML = buildAnswersHTML();
+  const belt = modeLabel || "Quiz";
 
-  // Put Quit button BELOW the answers
-  html += `
+  const win = window.open("", "_blank");
+  if (!win) { alert("Pop-up blocked. Please allow pop-ups to print."); return; }
+
+  const css = `
+    <style>
+      body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:20px; color:#111; }
+      h1{ font-size: 24px; margin: 0 0 8px; }
+      .meta{ font-size:18px; margin: 4px 0 14px; }
+      .answers-grid{ display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; }
+      .answer-chip{ font-size:14px; padding:6px 8px; border:1px solid #ddd; border-radius:8px; background:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .answer-chip.correct{ color:#2e7d32; background:#edf7ed; border-color:#c8e6c9; }
+      .answer-chip.wrong{ color:#c62828; background:#fff1f1; border-color:#ffcdd2; }
+      @media print { @page { margin: 12mm; } button { display:none; } }
+    </style>
+  `;
+
+  win.document.open();
+  win.document.write(`
+    <html>
+      <head><title>Dr B TTN — ${belt} — ${username}</title>${css}</head>
+      <body>
+        <h1>Dr B TTN — ${belt}</h1>
+        <div class="meta"><strong>${username}</strong> — Score: <strong>${correct} / ${allQuestions.length}</strong> — ${today}</div>
+        ${answersHTML}
+        <div style="margin-top:16px;">
+          <button onclick="window.print()">Print / Save as PDF</button>
+        </div>
+      </body>
+    </html>
+  `);
+  win.document.close();
+  try { win.onload = ()=>win.print(); } catch {}
+}
+
+window.printResults = printResults;
+
+function formatToday(){
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2,"0");
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yy = String(d.getFullYear()).slice(-2);
+  return `${dd}/${mm}/${yy}`;
+}
+
+/* ====== End & Answers ====== */
+function endQuiz(){
+  teardownQuiz();
+  destroyKeypad();
+
+  const qEl = document.getElementById("question"); if (qEl) qEl.style.display = "none";
+  const aEl = document.getElementById("answer");   if (aEl) aEl.style.display = "none";
+
+  // Tally score
+  let correct = 0;
+  for (let i=0; i<allQuestions.length; i++){
+    const c = Number(allQuestions[i].a);
+    const u = (userAnswers[i]==="" ? NaN : Number(userAnswers[i]));
+    if (!Number.isNaN(u) && u === c) correct++;
+  }
+  const username = (localStorage.getItem(NAME_KEY) || "").trim() || "Player";
+  const today = formatToday();
+
+  const s = document.getElementById("score");
+  if (s){
+    s.innerHTML = `
+      <div class="result-header" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 14px;">
+        <button class="big-button secondary" onclick="printResults()" title="Print or save as PDF">Print / Save</button>
+        <div class="result-line" style="font-size:28px;">
+          <strong>${username}</strong> — Score: <strong>${correct} / ${allQuestions.length}</strong> — ${today}
+        </div>
+      </div>
+      <button class="big-button" onclick="showAnswers()">Show answers</button>
+    `;
+  }
+}
+
+
+
+function showAnswers(){
+  const s = document.getElementById("score"); 
+  if (!s) return;
+
+  // Use the shared builder
+  const html = buildAnswersHTML() + `
     <div style="text-align:center;margin-top:16px;">
       <button class="big-button" onclick="quitFromQuiz()">Quit</button>
     </div>
   `;
 
-  s.innerHTML = s.innerHTML.replace(/<button[^>]*showAnswers\([^)]*\)[^>]*>.*?<\/button>/i, ""); // remove the "Show answers" button if present
+  // Remove the "Show answers" button and append the grid + Quit
+  s.innerHTML = s.innerHTML.replace(/<button[^>]*showAnswers\([^)]*\)[^>]*>.*?<\/button>/i, "");
   s.innerHTML += html;
 }
+
 
 
 /* ====== Queue (stub for offline) ====== */
