@@ -395,7 +395,8 @@ function preflightAndStart(questions, opts){
   currentIndex = 0;
   allQuestions = questions.slice();
   userAnswers = new Array(allQuestions.length).fill("");
-
+// Set a consistent font size for all questions in this belt
+fitFontForBelt(allQuestions);
   setScreen("quiz-screen");
 
   // Title: Dr B TTN — {modeLabel}
@@ -433,37 +434,12 @@ function syncAnswerMaxLen(){
 }
 function showQuestion(){
   if (ended) return;
-  const qObj = allQuestions[currentIndex];
+  const q = allQuestions[currentIndex];
   const qEl = document.getElementById("question");
   const aEl = document.getElementById("answer");
-
-  if (!qObj || typeof qObj.q !== "string") {
-    console.error("[showQuestion] bad question", currentIndex, qObj);
-    endQuiz();
-    return;
-  }
-
-  // Ensure rigid band exists & is sized BEFORE we set text
-  ensureQuestionBand();
-  layoutQuestionBand();
-
-  // Put text, then lock margins/metrics, then fit-to-line
-  qEl.textContent = qObj.q;
-
-  // (extra safety) ensure no margin/line-height creep every time:
-  qEl.style.margin = "0";
-  qEl.style.lineHeight = "1";
-
-  const isLongBelt = /Silver|Gold|Platinum|Obsidian/.test(modeLabel);
-  const startPx = isLongBelt ? 78 : 110;
-  const minPx   = isTabletLike() ? 44 : 56;
-  fitSingleLine(qEl, startPx, minPx);
-
-  if (aEl) {
-    aEl.value = "";
-    try{ aEl.focus(); aEl.setSelectionRange(aEl.value.length, aEl.value.length); }catch{}
-    attachKeyboard(aEl);
-  }
+  if (!q || typeof q.q !== "string") { console.error("[showQuestion] bad question", currentIndex, q); endQuiz(); return; }
+  if (qEl) qEl.textContent = q.q;
+  if (aEl) { aEl.value = ""; try{ aEl.focus(); }catch{} }
 }
 
 
@@ -634,6 +610,35 @@ function formatToday(){
   const mm = String(d.getMonth()+1).padStart(2,"0");
   const yy = String(d.getFullYear()).slice(-2);
   return `${dd}/${mm}/${yy}`;
+}
+
+function fitFontForBelt(questions){
+  const qEl = document.getElementById("question");
+  if (!qEl) return;
+
+  // Get longest question string
+  let maxLen = 0;
+  for (let q of questions){
+    if (q && typeof q.q === "string" && q.q.length > maxLen){
+      maxLen = q.q.length;
+    }
+  }
+
+  // Default font size (desktop baseline)
+  let fontSize = 120;
+
+  // Adjust if long questions
+  if (maxLen > 14) fontSize = 100;
+  if (maxLen > 20) fontSize = 80;
+
+  // On touch devices (iPad), bump slightly larger
+  if (IS_TOUCH){
+    if (fontSize === 120) fontSize = 130;
+    if (fontSize === 100) fontSize = 110;
+    if (fontSize === 80)  fontSize = 90;
+  }
+
+  qEl.style.fontSize = fontSize + "px";
 }
 
 /* ====== End & Answers ====== */
