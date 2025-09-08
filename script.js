@@ -55,6 +55,25 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.rando
 const randInt=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 const cryptoRandom=()=>String(Date.now())+"-"+Math.floor(Math.random()*1e9);
 function hashDJB2(s){ let h=5381; for(let i=0;i<s.length;i++){h=((h<<5)+h)+s.charCodeAt(i); h|=0;} return h>>>0; }
+// --- iOS detection + soft-keyboard suppression ---
+// --- iOS detection + soft-keyboard suppression ---
+
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS
+}
+function enableIOSNoKeyboard(on){
+  const a = document.getElementById("answer");
+  if (!a) return;
+  if (on && isIOS()){
+    a.readOnly = true;                 // stops iOS soft keyboard
+    a.setAttribute("inputmode","none"); // belt-and-braces
+  } else {
+    a.readOnly = false;
+    a.setAttribute("inputmode","numeric");
+  }
+}
+
 
 /* ---------- dynamic max length (+2 headroom) ---------- */
 function getMaxLenForCurrentQuestion(){
@@ -107,6 +126,7 @@ function quitFromQuiz(){
   teardownQuiz();
   hideMascot();
   goHome();
+   enableIOSNoKeyboard(false);
 }
 
 /* ---------- mini tests ---------- */
@@ -137,9 +157,23 @@ function startBlackBelt(){ modeLabel="Black Belt (2×–12×, 100 Q)"; quizSecon
 function startBronzeBelt(){ modeLabel="Bronze Belt (2×–12× + blanks, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildBronzeQuestions(100),{theme:"bronze"}); }
 function startSilverBelt(){ modeLabel="Silver Belt (2×–12×, powers of 10, 100 Q)"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildSilverQuestions(100),{theme:"silver"}); }
 /* GH19 extra belts */
-function startGoldBelt(){ modeLabel="Gold Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"gold"}); }
-function startPlatinumBelt(){ modeLabel="Platinum Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"platinum"}); }
-function startObsidianBelt(){ modeLabel="Obsidian Belt"; quizSeconds=QUIZ_SECONDS_DEFAULT; preflightAndStart(buildFullyMixed(100,{min:2,max:12}),{theme:"obsidian"}); }
+function startGoldBelt(){
+  modeLabel = "Gold Belt";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildFullyMixed(100,{min:2,max:12}), {theme:"gold"});
+}
+
+function startPlatinumBelt(){
+  modeLabel = "Platinum Belt (Missing Numbers)";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildBronzeQuestions(100), {theme:"platinum"});
+}
+
+function startObsidianBelt(){
+  modeLabel = "Obsidian Belt (×10 Factors)";
+  quizSeconds = QUIZ_SECONDS_DEFAULT;
+  preflightAndStart(buildSilverQuestions(100), {theme:"obsidian"});
+}
 
 /* ---------- question builders ---------- */
 function buildMiniQuestions(base, total){
@@ -255,6 +289,7 @@ function preflightAndStart(questions, opts={}){
 
   showQuestion();
   startTimer(quizSeconds);
+enableIOSNoKeyboard(true);
 
   const a = $("answer");
   attachKeyboard(a);
@@ -326,7 +361,8 @@ function hideMascot(){
 function endQuiz(){
   teardownQuiz();
   destroyKeypad();
-
+enableIOSNoKeyboard(false);
+   
   let correct = 0;
   for (let i=0;i<allQuestions.length;i++){
     const c = Number(allQuestions[i].a);
@@ -470,6 +506,12 @@ function initApp(){
   const saved = localStorage.getItem(NAME_KEY);
   if (saved && $("home-username")) $("home-username").value = saved;
   setScreen("home-screen");
-  hideMascot();
+   if (isIOS()) document.body.classList.add("ios");  // <- add this line
+  hideMascot();function initApp(){
+  const saved = localStorage.getItem(NAME_KEY);
+  if (saved && document.getElementById("home-username")) document.getElementById("home-username").value = saved;
+}
+window.addEventListener("DOMContentLoaded", initApp);
+
 }
 window.addEventListener("DOMContentLoaded", initApp);
