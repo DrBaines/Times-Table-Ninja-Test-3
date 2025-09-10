@@ -40,7 +40,7 @@ body {
 
 /* ---------- Quiz container ---------- */
 #quiz-title { margin-top:10px; margin-bottom:20px; display:block; }
-.question { font-size: 120px; margin: 0; }  /* margin 0 so it never nudges rows */
+.question { font-size: 100px; margin: 0; }  /* margin 0 so it never nudges rows */
 .answer-input { font-size: 100px; width: 340px; text-align: center; margin-top: 0; }
 .timer { font-size: 50px; margin-top: 30px; display:none !important; }
 .score { font-size: 40px; margin-top: 30px; }
