@@ -333,3 +333,12 @@ html, body {
   border-radius: 12px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.12);
 }
+
+/* iPad portrait widths (older iPad 768px, Air 820px, Pro 834px) */
+@media (hover: none) and (pointer: coarse) and (min-width: 700px) and (max-width: 900px) {
+  .answer-input {
+    width: 600px;     /* wider box for iPad portrait */
+    max-width: 92vw;  /* prevent overflow on narrow viewports */
+    font-size: 84px;  /* optional: slightly smaller so longer numbers fit */
+  }
+}
