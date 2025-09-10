@@ -1,208 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Times Table Trainer</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#1e3a8a" />
-  <link rel="icon" href="./favicon.ico" />
-  <link rel="stylesheet" href="./styles.css?v=frontpage-GH19" />
+  <title>Dr B's Times Table Ninja</title>
+  <link rel="stylesheet" href="./styles.css?v=frontpage-GH55" />
 </head>
 <body>
-  <noscript>
-    <div style="padding:12px; background:#fee2e2; color:#7f1d1d; text-align:center; font-size:18px;">
-      This app needs JavaScript to run. Please enable JavaScript and reload.
-    </div>
-  </noscript>
 
-  <!-- ===== HOME / FRONT PAGE ===== -->
-  <main id="home-screen" class="center" role="main">
-    <h1 class="title">Times Table Trainer</h1>
+  <!-- HOME -->
+  <section id="home-screen" class="center" style="display:block;">
+    <h1 class="title">Dr B's Times Table Ninja</h1>
+
+    <div id="welcome-user"></div>
 
     <div class="name-row">
-      <label for="home-username" class="visually-hidden">Your name</label>
+      <label class="visually-hidden" for="home-username">Your name</label>
       <input
-        type="text"
         id="home-username"
-        placeholder="Enter your name"
         class="big-input"
-        autocomplete="name"
-        aria-label="Enter your name"
+        placeholder="Type your name…"
+        autocomplete="off"
+        aria-label="Your name"
       />
     </div>
 
-    <div class="choice-buttons stack-mobile" role="group" aria-label="Main choices">
-      <button type="button" class="big-button primary" onclick="goMini()">Mini Tests (Single Tables)</button>
-      <button type="button" class="big-button secondary" onclick="goNinja()">Ninja Belt (Mixed Tables)</button>
+    <div class="choice-buttons" role="group" aria-label="Main choices">
+      <button id="btn-mini" class="choice" onclick="goMini()">Mini Tests</button>
+      <button id="btn-ninja" class="choice" onclick="goNinja()">Ninja Belt</button>
     </div>
-  </main>
 
-  <!-- ===== MINI TESTS SETUP ===== -->
-  <section id="mini-screen" class="center" style="display:none;" aria-labelledby="mini-title">
-    <h2 class="subtitle" id="hello-user"></h2>
-    <h2 class="subtitle" id="mini-title" style="font-size:32px; margin-top:10px;">Choose your times table</h2>
-    <div id="table-choices" class="choice-buttons" role="group" aria-label="Times table choices"></div>
+    <!-- Title image under the buttons -->
+    <div class="home-hero">
+      <img 
+    src="./images/title-pic.png" 
+    alt="Dr B's Times Table Ninja" 
+    loading="lazy" 
+    style="max-width: 320px; width: 90%; height: auto; margin-top: 20px;"
+  />
+    </div>
+  </section>
+
+  <!-- MINI -->
+  <section id="mini-screen" class="center" style="display:none;">
+    <h2 class="subtitle">Dr B's Times Table Ninja — Mini Tests</h2>
+    <div class="info-text">Choose a single times table and hit Start (always 50 questions).</div>
+
+    <div id="table-choices" class="choice-buttons" role="group" aria-label="Times table choices">
+      <!-- table buttons 2×–12× are injected by JS -->
+    </div>
 
     <div class="choice-buttons">
-      <button id="start-btn" onclick="startQuiz()" class="big-button primary">Start Quiz (50 Q / 5 min)</button>
+      <button class="big-button primary" onclick="startQuiz()">Start Mini Test</button>
       <button class="big-button" onclick="goHome()">Back</button>
     </div>
   </section>
 
-  <!-- ===== NINJA BELTS ===== -->
-  <section id="ninja-screen" class="center" style="display:none;" aria-labelledby="ninja-title">
-    <h2 class="subtitle" id="ninja-title">Ninja Belt</h2>
+  <!-- NINJA -->
+  <section id="ninja-screen" style="display:none;">
+    <h2 class="subtitle center">Ninja Belts</h2>
+
     <div class="belt-grid">
-      <!-- Use your real images inside ./images/. Filenames must match exactly (case-sensitive). -->
+      <!-- 50Q belts -->
       <div class="belt-card white">
-        <img src="./images/belt-white.png" alt="White Ninja mascot" class="belt-img" />
-        <div class="belt-name">White Ninja Belt</div>
-        <div class="belt-desc">Mixed: 3× &amp; 4×</div>
-        <div class="belt-meta">50 Q • 5 min</div>
+        <div class="belt-name">White Belt</div>
+        <div class="belt-desc">3× &amp; 4×</div>
+        <div class="belt-meta">50 Questions</div>
         <button class="big-button primary" onclick="startWhiteBelt()">Start White Belt</button>
       </div>
 
       <div class="belt-card yellow">
-        <img src="./images/belt-yellow.png" alt="Yellow Ninja mascot" class="belt-img" />
-        <div class="belt-name">Yellow Ninja Belt</div>
-        <div class="belt-desc">Mixed: 4× &amp; 6×</div>
-        <div class="belt-meta">50 Q • 5 min</div>
+        <div class="belt-name">Yellow Belt</div>
+        <div class="belt-desc">4× &amp; 6×</div>
+        <div class="belt-meta">50 Questions</div>
         <button class="big-button primary" onclick="startYellowBelt()">Start Yellow Belt</button>
       </div>
 
       <div class="belt-card orange">
-        <img src="./images/belt-orange.png" alt="Orange Ninja mascot" class="belt-img" />
-        <div class="belt-name">Orange Ninja Belt</div>
-        <div class="belt-desc">Mixed: 2x – 6x</div>
-        <div class="belt-meta">50 Q • 5 min</div>
+        <div class="belt-name">Orange Belt</div>
+        <div class="belt-desc">2×–6×</div>
+        <div class="belt-meta">50 Questions</div>
         <button class="big-button primary" onclick="startOrangeBelt()">Start Orange Belt</button>
       </div>
 
       <div class="belt-card green">
-        <img src="./images/belt-green.png" alt="Green Ninja mascot" class="belt-img" />
-        <div class="belt-name">Green Ninja Belt</div>
-        <div class="belt-desc">Mixed: 4× &amp; 8×</div>
-        <div class="belt-meta">50 Q • 5 min</div>
+        <div class="belt-name">Green Belt</div>
+        <div class="belt-desc">4× &amp; 8×</div>
+        <div class="belt-meta">50 Questions</div>
         <button class="big-button primary" onclick="startGreenBelt()">Start Green Belt</button>
       </div>
 
       <div class="belt-card blue">
-        <img src="./images/belt-blue.png" alt="Blue Ninja mascot" class="belt-img" />
-        <div class="belt-name">Blue Ninja Belt</div>
-        <div class="belt-desc">Mixed: 7× &amp; 8×</div>
-        <div class="belt-meta">50 Q • 5 min</div>
+        <div class="belt-name">Blue Belt</div>
+        <div class="belt-desc">7× &amp; 8×</div>
+        <div class="belt-meta">50 Questions</div>
         <button class="big-button primary" onclick="startBlueBelt()">Start Blue Belt</button>
       </div>
 
       <div class="belt-card pink">
-        <img src="./images/belt-pink.png" alt="Pink Ninja mascot" class="belt-img" />
-        <div class="belt-name">Pink Ninja Belt</div>
-        <div class="belt-desc">Mixed: 7× &amp; 9×</div>
-        <div class="belt-meta">50 Q • 5 min</div>
+        <div class="belt-name">Pink Belt</div>
+        <div class="belt-desc">7× &amp; 9×</div>
+        <div class="belt-meta">50 Questions</div>
         <button class="big-button primary" onclick="startPinkBelt()">Start Pink Belt</button>
       </div>
 
       <div class="belt-card purple">
-        <img src="./images/belt-purple.png" alt="Purple Ninja mascot" class="belt-img" />
-        <div class="belt-name">Purple Ninja Belt</div>
-        <div class="belt-desc">Mixed: 2x – 10x</div>
-        <div class="belt-meta">50 Q • 5 min</div>
+        <div class="belt-name">Purple Belt</div>
+        <div class="belt-desc">2×–10× (mixed)</div>
+        <div class="belt-meta">50 Questions</div>
         <button class="big-button primary" onclick="startPurpleBelt()">Start Purple Belt</button>
       </div>
 
+      <!-- 100Q belts -->
       <div class="belt-card red">
-        <img src="./images/belt-red.png" alt="Red Ninja mascot" class="belt-img" />
-        <div class="belt-name">Red Ninja Belt</div>
-        <div class="belt-desc">Mixed: 2x – 10x</div>
-        <div class="belt-meta">100 Q • 5 min</div>
+        <div class="belt-name">Red Belt</div>
+        <div class="belt-desc">2×–10× (mixed)</div>
+        <div class="belt-meta">100 Questions</div>
         <button class="big-button primary" onclick="startRedBelt()">Start Red Belt</button>
       </div>
 
       <div class="belt-card black">
-        <img src="./images/belt-black.png" alt="Black Ninja mascot" class="belt-img" />
-        <div class="belt-name">Black Ninja Belt</div>
-        <div class="belt-desc">Mixed: 2x – 12x</div>
-        <div class="belt-meta">100 Q • 5 min</div>
+        <div class="belt-name">Black Belt</div>
+        <div class="belt-desc">2×–12× (mixed)</div>
+        <div class="belt-meta">100 Questions</div>
         <button class="big-button primary" onclick="startBlackBelt()">Start Black Belt</button>
       </div>
 
       <div class="belt-card bronze">
-        <img src="./images/belt-bronze.png" alt="Bronze Ninja mascot" class="belt-img" />
-        <div class="belt-name">Bronze Ninja Belt</div>
-        <div class="belt-desc">Mixed: 2x – 12x + Missing Numbers</div>
-        <div class="belt-meta">100 Q • 5 min</div>
+        <div class="belt-name">Bronze Belt</div>
+        <div class="belt-desc">Missing-number mix</div>
+        <div class="belt-meta">100 Questions</div>
         <button class="big-button primary" onclick="startBronzeBelt()">Start Bronze Belt</button>
       </div>
 
       <div class="belt-card silver">
-        <img src="./images/belt-silver.png" alt="Silver Ninja mascot" class="belt-img" />
-        <div class="belt-name">Silver Ninja Belt</div>
-        <div class="belt-desc">Expanded factors (×10)</div>
-        <div class="belt-meta">100 Q • 5 min</div>
+        <div class="belt-name">Silver Belt</div>
+        <div class="belt-desc">×10 numbers (exps 0–1)</div>
+        <div class="belt-meta">100 Questions</div>
         <button class="big-button primary" onclick="startSilverBelt()">Start Silver Belt</button>
       </div>
 
-      <!-- GH19: Extra belts -->
       <div class="belt-card gold">
-        <img src="./images/belt-gold.png" alt="Gold Ninja mascot" class="belt-img" />
-        <div class="belt-name">Gold Ninja Belt</div>
-        <div class="belt-desc">Fully mixed: 2x – 12x</div>
-        <div class="belt-meta">100 Q • 5 min</div>
+        <div class="belt-name">Gold Belt</div>
+        <div class="belt-desc">Missing-number ×10 (exps 0–1)</div>
+        <div class="belt-meta">100 Questions</div>
         <button class="big-button primary" onclick="startGoldBelt()">Start Gold Belt</button>
       </div>
 
       <div class="belt-card platinum">
-        <img src="./images/belt-platinum.png" alt="Platinum Ninja mascot" class="belt-img" />
-        <div class="belt-name">Platinum Ninja Belt</div>
-        <div class="belt-desc">Fully mixed: 2x – 12x</div>
-        <div class="belt-meta">100 Q • 5 min</div>
+        <div class="belt-name">Platinum Belt</div>
+        <div class="belt-desc">×10 numbers (exps 0–2)</div>
+        <div class="belt-meta">100 Questions</div>
         <button class="big-button primary" onclick="startPlatinumBelt()">Start Platinum Belt</button>
       </div>
 
       <div class="belt-card obsidian">
-        <img src="./images/belt-obsidian.png" alt="Obsidian Ninja mascot" class="belt-img" />
-        <div class="belt-name">Obsidian Ninja Belt</div>
-        <div class="belt-desc">Fully mixed: 2x – 12x</div>
-        <div class="belt-meta">100 Q • 5 min</div>
+        <div class="belt-name">Obsidian Belt</div>
+        <div class="belt-desc">Missing-number ×10 (exps 0–2)</div>
+        <div class="belt-meta">100 Questions</div>
         <button class="big-button primary" onclick="startObsidianBelt()">Start Obsidian Belt</button>
       </div>
     </div>
 
-    <div class="choice-buttons"><button class="big-button" onclick="goHome()">Back</button></div>
-  </section>
-
-  <!-- ===== QUIZ UI ===== -->
-  <section id="quiz-container" class="center" style="display:none;" aria-labelledby="quiz-title">
-    <h2 id="quiz-title" class="subtitle">Quiz</h2>
-    <img id="quiz-mascot" class="quiz-mascot" src="" alt="" />
-
-    <div class="quiz-row">
-      <div class="question-col">
-        <div id="question" class="question" role="status" aria-live="polite"></div>
-        <label for="answer" class="visually-hidden">Your answer</label>
-        <input
-          type="text"
-          id="answer"
-          class="answer-input"
-          inputmode="numeric"
-          autocomplete="off"
-          aria-label="Your answer"
-        />
-      </div>
-
-      <div id="answer-pad" class="answer-pad" aria-label="On-screen number pad" role="group">
-        <noscript><p>Enable JavaScript to use the on-screen keypad.</p></noscript>
-      </div>
-    </div>
-
-    <div id="timer" class="timer" aria-hidden="true">Time left</div>
-    <div id="score" class="score" role="region" aria-label="Score and answers"></div>
-
-    <div class="choice-buttons">
-      <button class="big-button" onclick="quitFromQuiz()">Quit to Home</button>
+    <div class="center" style="margin:20px 0 40px;">
+      <button class="big-button" onclick="goHome()">Back</button>
     </div>
   </section>
 
-  <script src="./script.js?v=frontpage-GH19" defer></script>
+  <!-- QUIZ -->
+  <section id="quiz-screen" style="display:none;">
+    <div id="quiz-container">
+      <h2 id="quiz-title" class="subtitle">Dr B's Times Table Ninja</h2>
+      <div class="quiz-row">
+        <div class="question-col">
+          <div id="question" class="question" role="status" aria-live="polite"></div>
+
+          <label for="answer" class="visually-hidden">Your answer</label>
+          <input id="answer" class="answer-input" inputmode="numeric" autocomplete="off" aria-label="Your answer" />
+
+          <div id="timer" class="timer" aria-hidden="true"></div>
+
+          <div class="choice-buttons" style="margin-top:18px;">
+            <button class="big-button" onclick="quitFromQuiz()">Quit to Home</button>
+          </div>
+
+          <div id="score" class="score" role="region" aria-label="Score and answers"></div>
+        </div>
+
+        <div id="answer-pad" class="answer-pad" aria-label="On-screen number pad" role="group"></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="./script.js?v=frontpage-GH55"></script>
 </body>
 </html>
