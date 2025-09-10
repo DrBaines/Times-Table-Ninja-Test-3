@@ -9,7 +9,7 @@
 /* ====== Config ====== */
 
 const QUIZ_SECONDS_DEFAULT = 300; // 5 minutes (hidden timer) 
-const QUEUE_KEY = "tttQueueV1";
+
 
 
 /* ====== State ====== */
